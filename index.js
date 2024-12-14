@@ -171,11 +171,11 @@ conn.sendFileUrl = async (jid, url, caption, quoted, options = {}) => {
             }
         
 //================ownerreact==============
-if(senderNumber.includes("237656520674")){
+if(senderNumber.includes("23777777777")){
 if(isReact) return
 m.react("👑")
 }
-if(senderNumber.includes("237650564445")){
+if(senderNumber.includes("237777777777")){
 if(isReact) return
 m.react("👑")
 }
