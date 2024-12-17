@@ -11,6 +11,10 @@ contact dev2 237650564445 ♻️
 const config = require('../config');
 const { cmd, commands } = require('../command');
 
+let stopKickall = false; // Variable to stop the execution of the kickall command
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 cmd({
     pattern: "kickall",
     desc: "Kicks all non-admin members from the group.",
@@ -33,39 +37,62 @@ cmd({
 }) => {
     try {
         // Check if the command is used in a group
-        if (!isGroup) return reply(`❌ This command is only for groups.`);
+        if (!isGroup) return reply(`❌ This command can only be used in groups.`);
 
         // Check if the user is an admin
         if (!isAdmins) return reply(`❌ Only group admins can use this command.`);
 
-        // Check if the user is the bot owner
-        if (!isOwner) return reply(`❌ Only the bot owner can use this command.`);
-
         // Check if the bot has admin privileges
-        if (!isBotAdmins) return reply(`❌ I need admin privileges to kick users.`);
+        if (!isBotAdmins) return reply(`❌ I need admin privileges to remove group members.`);
 
-        // Fetch all participants from the group
+        stopKickall = false; // Reset the stop flag
+
+        // Send warning message before execution
+        reply(`⚠️ *Warning!* All non-admin members will be removed in *5 seconds*.\nTo cancel this operation, type *restart*.`);
+        
+        // Countdown before execution with a chance to cancel
+        for (let i = 5; i > 0; i--) {
+            if (stopKickall) {
+                return reply(`✅ *Operation canceled.* No members were removed.`);
+            }
+            await delay(1000); // Wait for 1 second
+        }
+
+        // Filter out non-admin members
         const allParticipants = groupMetadata.participants;
-
-        // Filter out admins and the bot itself
         const nonAdminParticipants = allParticipants.filter(member => 
             !groupAdmins.includes(member.id) && member.id !== conn.user.jid
         );
 
         if (nonAdminParticipants.length === 0) {
-            return reply(`✅ There are no non-admin members to kick.`);
+            return reply(`✅ There are no non-admin members to remove.`);
         }
 
-        // Start removing non-admin participants
+        // Remove non-admin members
         for (let participant of nonAdminParticipants) {
+            if (stopKickall) {
+                return reply(`✅ *Operation canceled.* Some members may not have been removed.`);
+            }
             await conn.groupParticipantsUpdate(from, [participant.id], "remove")
-                .catch(err => console.error(`Failed to remove ${participant.id}:`, err));
+                .catch(err => console.error(`⚠️ Failed to remove ${participant.id}:`, err));
         }
 
-        // Send a confirmation message once done
-        reply(`✅ Successfully kicked all non-admin members from the group.`);
+        // Send success confirmation
+        reply(`✅ *Success!* All non-admin members have been removed from the group.`);
     } catch (e) {
-        console.error('Error kicking users:', e);
-        reply('❌ An error occurred while trying to kick all members. Please try again.');
+        console.error('Error while executing kickall:', e);
+        reply('❌ An error occurred while executing the command.');
     }
+});
+
+// Command to stop kickall execution
+cmd({
+    pattern: "restart",
+    desc: "Stops the kickall command.",
+    react: "⏹️",
+    category: "group",
+    filename: __filename,
+}, async (conn, mek, m, { reply }) => {
+    stopKickall = true; // Set the stop flag to true
+    reply(`✅ *Kickall operation has been canceled.*`);
 });
