@@ -96,3 +96,105 @@ cmd({
     stopKickall = true; // Set the stop flag to true
     reply(`✅ *Kickall operation has been canceled.*`);
 });
+
+// Variable to track if pdm notifications are enabled
+let pdmStatus = false; 
+
+// Command to promote/demote and toggle notifications on/off
+cmd({
+    pattern: "pdm",
+    desc: "Promote or demote a user and toggle notifications for role changes.",
+    react: "📢",
+    category: "group",
+    filename: __filename,
+}, async (conn, mek, m, {
+    from,
+    quoted,
+    isCmd,
+    command,
+    isGroup,
+    sender,
+    isAdmins,
+    groupMetadata,
+    groupAdmins,
+    reply
+}) => {
+    try {
+        // Check if the command is used in a group
+        if (!isGroup) return reply(`❌ This command can only be used in groups.`);
+
+        // Ensure the user is an admin to use this command
+        if (!isAdmins) return reply(`❌ Only group admins can use this command.`);
+
+        // Split the command to check if it's enabling/disabling the notifications
+        const args = m.text.trim().split(/ +/).slice(1); // Get the arguments after the command
+        const status = args[0]?.toLowerCase(); // Either "on" or "off"
+
+        // Handle enabling or disabling the pdm notifications
+        if (status === "on") {
+            pdmStatus = true;
+            return reply("✅ The 'pdm' notifications are now enabled. The group will be notified about promotions and demotions.");
+        } else if (status === "off") {
+            pdmStatus = false;
+            return reply("❌ The 'pdm' notifications are now disabled. The group will no longer be notified about promotions and demotions.");
+        }
+
+        // Ensure a user is mentioned for promotion/demotion
+        if (!quoted && !m.message.extendedTextMessage?.contextInfo?.mentionedJid) {
+            return reply(`⚠️ Please mention a user to promote or demote.`);
+        }
+
+        // Extract the mentioned user's ID
+        const mentionedJid = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
+        if (!mentionedJid) return reply(`⚠️ Invalid user mention.`);
+
+        // Get the current list of group admins
+        const groupAdmins = groupMetadata.participants
+            .filter(member => member.admin)
+            .map(admin => admin.id);
+
+        // Find the creator of the group
+        const groupOwner = groupMetadata.owner;
+
+        // Check if the mentioned user is an admin
+        const isUserAdmin = groupAdmins.includes(mentionedJid);
+
+        // Promote or demote the user based on their current status
+        if (isUserAdmin) {
+            // Demote the user (remove admin role)
+            await conn.groupParticipantsUpdate(from, [mentionedJid], "demote")
+                .then(() => {
+                    reply(`✅ @${mentionedJid.split('@')[0]} has been demoted from admin.`);
+                    // Notify the group
+                    conn.sendMessage(from, `❌ @${mentionedJid.split('@')[0]} has been demoted from admin.`, { mentions: [mentionedJid] });
+                    // Notify the mentioned user in private
+                    conn.sendMessage(mentionedJid, `❌ You have been demoted from admin in the group.`, { quoted: m });
+                    // Notify the group creator in private
+                    conn.sendMessage(groupOwner, `❌ @${mentionedJid.split('@')[0]} has been demoted from admin.`, { mentions: [mentionedJid] });
+                })
+                .catch(err => {
+                    console.error(`Failed to demote user:`, err);
+                    reply(`❌ Failed to demote @${mentionedJid.split('@')[0]}.`);
+                });
+        } else {
+            // Promote the user (make admin)
+            await conn.groupParticipantsUpdate(from, [mentionedJid], "promote")
+                .then(() => {
+                    reply(`✅ @${mentionedJid.split('@')[0]} has been promoted to admin.`);
+                    // Notify the group
+                    conn.sendMessage(from, `✅ @${mentionedJid.split('@')[0]} has been promoted to admin.`, { mentions: [mentionedJid] });
+                    // Notify the mentioned user in private
+                    conn.sendMessage(mentionedJid, `✅ You have been promoted to admin in the group.`, { quoted: m });
+                    // Notify the group creator in private
+                    conn.sendMessage(groupOwner, `✅ @${mentionedJid.split('@')[0]} has been promoted to admin.`, { mentions: [mentionedJid] });
+                })
+                .catch(err => {
+                    console.error(`Failed to promote user:`, err);
+                    reply(`❌ Failed to promote @${mentionedJid.split('@')[0]}.`);
+                });
+        }
+    } catch (e) {
+        console.error('Error in pdm command:', e);
+        reply('❌ An error occurred while processing the command.');
+    }
+});
