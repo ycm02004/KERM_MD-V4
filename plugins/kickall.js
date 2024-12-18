@@ -96,11 +96,6 @@ cmd({
     stopKickall = true; // Set the stop flag to true
     reply(`✅ *Kickall operation has been canceled.*`);
 });
-
-// Variable to track if pdm notifications are enabled
-let pdmStatus = false; 
-
-// Command to promote/demote and toggle notifications on/off
 cmd({
     pattern: "pdm",
     desc: "Promote or demote a user and toggle notifications for role changes.",
