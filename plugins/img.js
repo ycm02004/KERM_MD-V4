@@ -66,7 +66,7 @@ cmd({
     pattern: "ss",
     desc: "Take a screenshot of a webpage for a selected device.",
     react: "📸",
-    category: "media",
+    category: "utility",
     use: ".ss <link>",
     filename: __filename,
 }, async (conn, mek, m, { args, reply, isGroup }) => {
@@ -94,7 +94,7 @@ cmd({
             return reply('❌ No response received in time.');
         }
 
-        // Get the user's choice
+        // Get the user's choice for the device
         const choice = collected.text.trim();
 
         // Set viewport based on the device choice
@@ -113,22 +113,52 @@ cmd({
                 return reply('❌ Invalid choice. Please choose 1 for Android, 2 for Tablet, or 3 for PC.');
         }
 
+        // Ask the user for a custom caption
+        await conn.sendMessage(m.chat, {
+            text: `> POWERED BY KERM`,
+            contextInfo: { mentionedJid: [m.sender] },
+        });
+
+        // Wait for the user's response for the custom caption
+        const captionResponse = await conn.waitForMessage(m.chat, filter, { timeout: 60000 }); // Timeout after 60 seconds
+
+        if (!captionResponse) {
+            return reply('❌ No caption received in time.');
+        }
+
+        // Get the user's custom caption
+        const customCaption = captionResponse.text.trim();
+
         // Launch Puppeteer
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         await page.setViewport(viewport);
 
         // Navigate to the URL
-        await page.goto(url, { waitUntil: 'load', timeout: 0 });
+        try {
+            await page.goto(url, { waitUntil: 'load', timeout: 60000 }); // Set a timeout to 60 seconds
+        } catch (error) {
+            console.error("Page navigation error:", error);
+            return reply('❌ Failed to load the page. Please check the URL and try again.');
+        }
 
         // Take a screenshot
-        const screenshotBuffer = await page.screenshot({ fullPage: true });
+        let screenshotBuffer;
+        try {
+            screenshotBuffer = await page.screenshot({ fullPage: true });
+        } catch (error) {
+            console.error("Screenshot capture error:", error);
+            return reply('❌ Failed to capture screenshot. Please try again.');
+        }
 
         // Close the browser
         await browser.close();
 
-        // Send the screenshot to the chat
-        await conn.sendMessage(m.chat, { image: screenshotBuffer, caption: `📸 Screenshot of: ${url} on ${choice === '1' ? 'Android' : choice === '2' ? 'Tablet' : 'PC'}` });
+        // Create the caption using the user's input
+        const caption = `Screenshot by ${customCaption}\nPage: ${url}\nDevice: ${choice === '1' ? 'Android' : choice === '2' ? 'Tablet' : 'PC'}`;
+
+        // Send the screenshot to the chat with caption
+        await conn.sendMessage(m.chat, { image: screenshotBuffer, caption: caption });
         
     } catch (e) {
         console.error('Error capturing screenshot:', e);
