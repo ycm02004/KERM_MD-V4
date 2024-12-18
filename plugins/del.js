@@ -34,4 +34,32 @@ const key = {
 console.log(e);
 reply('successful..👨‍💻✅')
 } 
-})
+});
+cmd({
+    pattern: "del",
+    desc: "Delete a message sent by the bot (in groups or private chats).",
+    react: "🗑️",
+    category: "utility",
+    filename: __filename,
+}, async (conn, mek, m, {
+    from,
+    quoted,
+    reply
+}) => {
+    try {
+        // Check if the command was used in response to a message
+        if (!quoted) return;
+
+        // Get the ID of the message to delete
+        const { remoteJid, id, fromMe } = quoted.key;
+
+        // Ensure the message to delete was sent by the bot
+        if (!fromMe) return;
+
+        // Delete the message
+        await conn.sendMessage(from, { delete: { remoteJid, fromMe, id } });
+        
+    } catch (e) {
+        console.error('Error in del command:', e);
+    }
+});
