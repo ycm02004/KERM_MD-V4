@@ -96,6 +96,11 @@ cmd({
     stopKickall = true; // Set the stop flag to true
     reply(`✅ *Kickall operation has been canceled.*`);
 });
+
+// Variable to track if pdm notifications are enabled
+let pdmStatus = false; 
+
+// Command to promote/demote and toggle notifications on/off
 cmd({
     pattern: "pdm",
     desc: "Promote or demote a user and toggle notifications for role changes.",
@@ -135,13 +140,8 @@ cmd({
         }
 
         // Ensure a user is mentioned for promotion/demotion
-        if (!quoted && !m.message.extendedTextMessage?.contextInfo?.mentionedJid) {
-            return reply(`⚠️ Please mention a user to promote or demote.`);
-        }
-
-        // Extract the mentioned user's ID
-        const mentionedJid = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
-        if (!mentionedJid) return reply(`⚠️ Invalid user mention.`);
+        const mentionedJid = m.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0]; // Correct way to get mentioned JID
+        if (!mentionedJid) return reply(`⚠️ Please mention a user to promote or demote.`);
 
         // Get the current list of group admins
         const groupAdmins = groupMetadata.participants
