@@ -9,7 +9,6 @@ contact dev2 237650564445 ♻️
 
 
 const { cmd } = require('../command');
-const { captureScreenshot } = require('../puppeteer'); // Importer la fonction de capture
 const axios = require('axios');
 const { Buffer } = require('buffer');
 
