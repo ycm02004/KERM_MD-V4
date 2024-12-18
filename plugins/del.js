@@ -39,6 +39,7 @@ cmd({
     pattern: "del",
     desc: "Delete a message sent by the bot (in groups or private chats).",
     react: "🗑️",
+    alias: ["delete", "dlt"],
     category: "utility",
     filename: __filename,
 }, async (conn, mek, m, {
