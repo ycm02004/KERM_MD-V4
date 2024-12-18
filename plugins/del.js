@@ -39,7 +39,6 @@ cmd({
     pattern: "del",
     desc: "Delete a message sent by the bot (in groups or private chats).",
     react: "🗑️",
-    alias: ["delete", "dlt"],
     category: "utility",
     filename: __filename,
 }, async (conn, mek, m, {
@@ -49,17 +48,16 @@ cmd({
 }) => {
     try {
         // Check if the command was used in response to a message
-        if (!quoted) return;
+        if (!quoted) return reply(`❌ Please reply to a message sent by me to delete it.`);
 
-        // Get the ID of the message to delete
+        // Extract the key of the message to delete
         const { remoteJid, id, fromMe } = quoted.key;
 
         // Ensure the message to delete was sent by the bot
-        if (!fromMe) return;
+        if (!fromMe) return reply(`❌ I can only delete messages that I have sent.`);
 
         // Delete the message
-        await conn.sendMessage(from, { delete: { remoteJid, fromMe, id } });
-        
+        await conn.sendMessage(remoteJid, { delete: quoted.key });
     } catch (e) {
         console.error('Error in del command:', e);
     }
