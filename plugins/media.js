@@ -308,94 +308,77 @@ cmd({
 });
 cmd({
     pattern: "vv",
-    desc: "Open and resend a 'view once' media in the chat.",
+    desc: "Open a view-once media message and resend it in the chat.",
     react: "👀",
     category: "utility",
-    use: ".vv (reply to a view-once message)",
-    filename: __filename
-}, async (conn, mek, m, { quoted, reply }) => {
+    filename: __filename,
+}, async (conn, mek, m, { reply, quoted }) => {
     try {
-        // Check if the command is replied to a view-once message
-        if (!quoted || !quoted.message || !quoted.message.viewOnceMessage) {
-            return reply("❌ Please reply to a 'view once' message to use this command.");
+        // Check if the command is used to reply to a view-once message
+        if (!quoted || (!quoted.image && !quoted.video)) {
+            return reply("❌ Please reply to a view-once message (image or video).");
         }
 
-        // Extract the content of the view-once message
-        const mediaMessage = quoted.message.viewOnceMessage.message;
-
-        // Download the media (image or video)
-        const mediaData = await conn.downloadMediaMessage(mediaMessage);
-
-        if (!mediaData) {
-            return reply("❌ Failed to open the 'view once' message. Please try again.");
+        // Download the view-once media
+        const media = await quoted.download();
+        if (!media) {
+            return reply("❌ Failed to open the view-once media.");
         }
 
-        // Determine the type of media (image or video) and resend it
-        const isImage = mediaMessage.imageMessage ? true : false;
-        const isVideo = mediaMessage.videoMessage ? true : false;
+        // Determine the type of media (image or video)
+        const type = quoted.image ? 'image' : 'video';
 
-        if (isImage) {
-            await conn.sendMessage(m.chat, { image: mediaData, caption: "🔓 Opened 'view once' image" }, { quoted: m });
-        } else if (isVideo) {
-            await conn.sendMessage(m.chat, { video: mediaData, caption: "🔓 Opened 'view once' video" }, { quoted: m });
-        } else {
-            reply("❌ Unsupported media type.");
-        }
+        // Resend the media to the chat
+        await conn.sendMessage(m.chat, { [type]: media }, { quoted: mek });
+        reply(`✅ View-once ${type} opened and resent successfully.`);
     } catch (error) {
-        console.error("Error in 'vv' command:", error);
-        reply("❌ An error occurred while opening the 'view once' message. Please try again.");
+        console.error("Error in vv command:", error);
+        reply("❌ An error occurred while trying to open the view-once message.");
     }
 });
 cmd({
     pattern: "shazam",
     alias: "find",
-    desc: "Recognize a song from an audio file sent by the user.",
+    desc: "Identify a song by an audio file.",
     react: "🎵",
     category: "music",
+    use: ".shazam <reply to audio>",
     filename: __filename,
-}, async (conn, mek, m, { from, quoted, isGroup, reply }) => {
+}, async (conn, mek, m, { quoted, reply }) => {
     try {
-        // Check if the message has an audio file
+        // Check if the command is replying to an audio file
         if (!quoted || !quoted.audio) {
-            return reply("❌ Please send an audio file and reply to it with the command `.shazam`.");
+            return reply("❌ Please reply to an audio file to identify the song.");
         }
 
-        // Download the audio file from the message
-        const audioMessage = await quoted.download();
-        const filePath = path.join(__dirname, 'audioFile.mp3');
+        // Notify the user
+        reply("🎵 Processing your audio file...");
 
-        // Save the file locally
-        fs.writeFileSync(filePath, audioMessage);
+        // Download the audio file
+        const audioBuffer = await quoted.download();
+        const audioFilePath = './temp_audio.mp3';
+        fs.writeFileSync(audioFilePath, audioBuffer);
 
-        // Send the audio file to the Audd.io API to recognize the song
-        const formData = new FormData();
-        formData.append('file', fs.createReadStream(filePath));
-        formData.append('api_token', '088e1380100df1e7832842d31aab7e88');  // Replace with your actual API key
-
-        const response = await axios.post('https://api.audd.io/', formData, {
-            headers: formData.getHeaders(),
+        // Process the audio with Shazam or a similar API
+        const response = await axios.post('https://api.audd.io/', {
+            api_token: 'YOUR_API_KEY',
+            file: fs.createReadStream(audioFilePath),
+            return: 'timecode,lyrics,deezer,apple_music,spotify',
         });
 
-        // Check if the song was recognized
-        if (response.data.status === 'error' || !response.data.result) {
-            return reply("❌ Sorry, I couldn't recognize the song.");
+        // Clean up the temporary audio file
+        fs.unlinkSync(audioFilePath);
+
+        // Check API response
+        if (response.data.status === 'success' && response.data.result) {
+            const { title, artist, album } = response.data.result;
+            const lyrics = response.data.result.lyrics || "No lyrics available.";
+            reply(`🎵 Song Identified!\n\n🎤 Artist: ${artist}\n📀 Title: ${title}\n💿 Album: ${album}\n\n📜 Lyrics:\n${lyrics}`);
+        } else {
+            reply("❌ Sorry, I couldn't identify the song. Please try again with a clearer audio clip.");
         }
-
-        // Extract song details from the response
-        const song = response.data.result;
-        const songTitle = song.title;
-        const songArtist = song.artist;
-        const songAlbum = song.album;
-        const songLink = song.link;
-
-        // Send the song details back to the user
-        reply(`🎶 I Youpiii🥰 recognized the song!\n\n*Title*: ${songTitle}\n*Artist*: ${songArtist}\n*Album*: ${songAlbum}\n*Link*: ${songLink}`);
-        
-        // Clean up the audio file after recognition
-        fs.unlinkSync(filePath);
-
     } catch (error) {
-        console.error("Error recognizing the song:", error);
-        reply("❌ An error occurred while trying to recognize the song. Please try again.");
+        console.error("Error in Shazam command:", error);
+        reply("❌ An error occurred while processing your request. Please try again later.");
     }
 });
