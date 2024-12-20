@@ -161,12 +161,10 @@ cmd({
         }
     }
 });
-// Remplacer par votre propre clé API OpenAI
-const OPENAI_API_KEY = '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'; // Insérez votre clé API ici
-
 // Variable pour suivre l'état du chatbot (activé/désactivé)
 let chatbotEnabled = false;
 
+// Activer ou désactiver le chatbot
 cmd({
     pattern: "chatbot",
     desc: "Activate or deactivate the chatbot.",
@@ -184,13 +182,13 @@ cmd({
         // Activer le chatbot
         if (args[0].toLowerCase() === "on") {
             chatbotEnabled = true;
-            return reply("✅ Chatbot has been activated. You can now chat with the bot.");
+            return reply("✅ Chatbot Kerm has been activated. You can now chat with the bot.");
         }
 
         // Désactiver le chatbot
         if (args[0].toLowerCase() === "off") {
             chatbotEnabled = false;
-            return reply("❌ Chatbot has been deactivated. The bot will no longer respond to messages.");
+            return reply("❌ Chatbot Kerm has been deactivated. The bot will no longer respond to messages.");
         }
 
     } catch (error) {
@@ -199,21 +197,24 @@ cmd({
     }
 });
 
-// Ecouter les messages entrants pour répondre automatiquement si le chatbot est activé
+// API OpenAI key for generating responses
+const OPENAI_API_KEY = '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'; // Replace with your actual OpenAI API key
+
+// Listen for new messages and respond if chatbot is enabled
 conn.on('message-new', async (m) => {
-    if (!chatbotEnabled) return; // Si le chatbot est désactivé, ignorer les messages
+    if (!chatbotEnabled) return; // If chatbot is disabled, ignore messages
 
     const { text, sender, from } = m;
 
-    // Si le message vient d'un utilisateur (pas du bot)
+    // If the message is from a user (not the bot itself)
     if (sender !== conn.user.id) {
         try {
-            // Envoyer le message à l'API OpenAI pour générer une réponse
+            // Send the message to OpenAI API for generating a response
             const response = await axios.post('https://api.openai.com/v1/completions', {
-                model: "text-davinci-003", // ou un autre modèle GPT-3 disponible
+                model: "text-davinci-003", // or another GPT-3 model available
                 prompt: text,
                 max_tokens: 150,
-                temperature: 0.9, // Ajuster la créativité de la réponse
+                temperature: 0.9, // Adjust creativity of the response
             }, {
                 headers: {
                     'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -221,10 +222,10 @@ conn.on('message-new', async (m) => {
                 }
             });
 
-            // Récupérer la réponse de l'API
+            // Get the AI response text
             const botReply = response.data.choices[0].text.trim();
 
-            // Répondre dans le chat avec la réponse générée par l'IA
+            // Send the AI response back to the chat
             conn.sendMessage(from, { text: botReply });
 
         } catch (error) {
