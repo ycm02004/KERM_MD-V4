@@ -346,3 +346,55 @@ cmd({
         reply("❌ An error occurred while opening the 'view once' message. Please try again.");
     }
 });
+cmd({
+    pattern: "shazam",
+    desc: "Recognize a song from an audio file sent by the user.",
+    react: "🎵",
+    category: "music",
+    filename: __filename,
+}, async (conn, mek, m, { from, quoted, isGroup, reply }) => {
+    try {
+        // Check if the message has an audio file
+        if (!quoted || !quoted.audio) {
+            return reply("❌ Please send an audio file and reply to it with the command `.shazam`.");
+        }
+
+        // Download the audio file from the message
+        const audioMessage = await quoted.download();
+        const filePath = path.join(__dirname, 'audioFile.mp3');
+
+        // Save the file locally
+        fs.writeFileSync(filePath, audioMessage);
+
+        // Send the audio file to the Audd.io API to recognize the song
+        const formData = new FormData();
+        formData.append('file', fs.createReadStream(filePath));
+        formData.append('api_token', '088e1380100df1e7832842d31aab7e88');  // Replace with your actual API key
+
+        const response = await axios.post('https://api.audd.io/', formData, {
+            headers: formData.getHeaders(),
+        });
+
+        // Check if the song was recognized
+        if (response.data.status === 'error' || !response.data.result) {
+            return reply("❌ Sorry, I couldn't recognize the song.");
+        }
+
+        // Extract song details from the response
+        const song = response.data.result;
+        const songTitle = song.title;
+        const songArtist = song.artist;
+        const songAlbum = song.album;
+        const songLink = song.link;
+
+        // Send the song details back to the user
+        reply(`🎶 I Youpiii🥰 recognized the song!\n\n*Title*: ${songTitle}\n*Artist*: ${songArtist}\n*Album*: ${songAlbum}\n*Link*: ${songLink}`);
+        
+        // Clean up the audio file after recognition
+        fs.unlinkSync(filePath);
+
+    } catch (error) {
+        console.error("Error recognizing the song:", error);
+        reply("❌ An error occurred while trying to recognize the song. Please try again.");
+    }
+});
