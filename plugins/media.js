@@ -348,6 +348,7 @@ cmd({
 });
 cmd({
     pattern: "shazam",
+    alias: "find",
     desc: "Recognize a song from an audio file sent by the user.",
     react: "🎵",
     category: "music",
