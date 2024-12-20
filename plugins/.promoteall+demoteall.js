@@ -1,5 +1,6 @@
 const { cmd } = require('../command');
 
+
 cmd({
     pattern: "promoteall",
     desc: "Promote all members of the group to admins.",
