@@ -116,29 +116,33 @@ cmd({
         reply("❌ An error occurred while starting the timer. Please try again.");
     }
 });
+const axios = require('axios');
+const { cmd } = require('../command');
+
 cmd({
     pattern: "lyrics",
-    desc: "Get the lyrics of a song by title and artist.",
+    alias: "lyric",
+    desc: "Get the lyrics of a song by artist and title.",
     react: "🎵",
     category: "utility",
-    use: ".lyrics <song title> by <artist>",
+    use: ".lyrics <artist> <song title>",
     filename: __filename,
 }, async (conn, mek, m, { args, reply }) => {
     try {
-        if (args.length === 0) {
-            return reply("❌ Please provide a song title and artist.\nExample: `.lyrics Shape of You by Ed Sheeran`");
+        if (args.length < 2) {
+            return reply("❌ Please provide the artist and song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
         }
 
         // Parse the user input
-        const input = args.join(" ");
-        const [title, artist] = input.split(" by ").map((str) => str.trim());
+        const artist = args[0]; // First word is the artist's name
+        const title = args.slice(1).join(" "); // The rest is the song title
 
-        if (!title || !artist) {
-            return reply("❌ Please specify both the song title and the artist.\nExample: `.lyrics Shape of You by Ed Sheeran`");
+        if (!artist || !title) {
+            return reply("❌ Please specify both the artist and the song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
         }
 
         // Notify the user that the lyrics are being fetched
-        reply(`🎵 Searching 🔍 for lyrics of "${title}" by ${artist}...`);
+        reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
 
         // Fetch lyrics using an API
         const response = await axios.get(`https://api.lyrics.ovh/v1/${artist}/${title}`);
@@ -149,12 +153,12 @@ cmd({
         }
 
         // Send the lyrics back to the chat
-        reply(`KERM RESULTS\n\n🎶 *${title}* by *${artist}*\n\n${lyrics}`);
+        reply(`*KERM RESULT*\n\n🎶 *${title}* by *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
 
         if (error.response && error.response.status === 404) {
-            reply("❌ Sorry, no lyrics found for the specified song and artist.");
+            reply("❌ Sorry, no lyrics found for the specified artist and song title.");
         } else {
             reply("❌ An error occurred while fetching the lyrics. Please try again later.");
         }
