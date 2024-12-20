@@ -161,3 +161,67 @@ cmd({
         }
     }
 });
+// Remplacer par votre propre clé API OpenAI
+const OPENAI_API_KEY = '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';
+
+// Variable pour suivre l'état du chatbot (activé/désactivé)
+let chatbotEnabled = false;
+
+cmd({
+    pattern: "chatbot",
+    desc: "Activate or deactivate the chatbot or chat with the bot.",
+    react: "🤖",
+    category: "chat",
+    use: ".chatbot <message> or .chatbot on/off",
+    filename: __filename,
+}, async (conn, mek, m, { args, reply }) => {
+    try {
+        // Si aucun argument n'est donné
+        if (args.length === 0) {
+            return reply("❌ Please provide a command or message. Use '.chatbot on' to activate, '.chatbot off' to deactivate, or send a message to chat with the bot.");
+        }
+
+        // Activer le chatbot
+        if (args[0].toLowerCase() === "on") {
+            chatbotEnabled = true;
+            return reply("✅ Chatbot has been activated. You can now chat with the bot.");
+        }
+
+        // Désactiver le chatbot
+        if (args[0].toLowerCase() === "off") {
+            chatbotEnabled = false;
+            return reply("❌ Chatbot has been deactivated. The bot will no longer respond to messages.");
+        }
+
+        // Si le chatbot est désactivé, renvoyer un message d'erreur
+        if (!chatbotEnabled) {
+            return reply("❌ The chatbot is currently deactivated. Please type '.chatbot on' to activate it.");
+        }
+
+        // Si l'utilisateur envoie un message, nous traitons le message avec l'IA
+        const message = args.join(" ");
+        
+        // Envoyer le message à l'API OpenAI pour générer une réponse
+        const response = await axios.post('https://api.openai.com/v1/completions', {
+            model: "text-davinci-003", // ou un autre modèle GPT-3 disponible
+            prompt: message,
+            max_tokens: 150,
+            temperature: 0.9, // Ajuster la créativité de la réponse
+        }, {
+            headers: {
+                'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Récupérer la réponse de l'API
+        const botReply = response.data.choices[0].text.trim();
+
+        // Répondre dans le chat avec la réponse générée par l'IA
+        reply(botReply);
+        
+    } catch (error) {
+        console.error("Error in chatbot command:", error.message);
+        reply("❌ An error occurred while processing your message. Please try again.");
+    }
+});
