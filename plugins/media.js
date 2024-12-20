@@ -306,3 +306,43 @@ cmd({
         reply("❌ Sorry, I couldn't fetch the time for the specified timezone. Please ensure the timezone is valid.");
     }
 });
+cmd({
+    pattern: "vv",
+    desc: "Open and resend a 'view once' media in the chat.",
+    react: "👀",
+    category: "utility",
+    use: ".vv (reply to a view-once message)",
+    filename: __filename
+}, async (conn, mek, m, { quoted, reply }) => {
+    try {
+        // Check if the command is replied to a view-once message
+        if (!quoted || !quoted.message || !quoted.message.viewOnceMessage) {
+            return reply("❌ Please reply to a 'view once' message to use this command.");
+        }
+
+        // Extract the content of the view-once message
+        const mediaMessage = quoted.message.viewOnceMessage.message;
+
+        // Download the media (image or video)
+        const mediaData = await conn.downloadMediaMessage(mediaMessage);
+
+        if (!mediaData) {
+            return reply("❌ Failed to open the 'view once' message. Please try again.");
+        }
+
+        // Determine the type of media (image or video) and resend it
+        const isImage = mediaMessage.imageMessage ? true : false;
+        const isVideo = mediaMessage.videoMessage ? true : false;
+
+        if (isImage) {
+            await conn.sendMessage(m.chat, { image: mediaData, caption: "🔓 Opened 'view once' image" }, { quoted: m });
+        } else if (isVideo) {
+            await conn.sendMessage(m.chat, { video: mediaData, caption: "🔓 Opened 'view once' video" }, { quoted: m });
+        } else {
+            reply("❌ Unsupported media type.");
+        }
+    } catch (error) {
+        console.error("Error in 'vv' command:", error);
+        reply("❌ An error occurred while opening the 'view once' message. Please try again.");
+    }
+});
