@@ -306,3 +306,84 @@ cmd({
         reply("❌ Sorry, I couldn't fetch the time for the specified timezone. Please ensure the timezone is valid.");
     }
 });
+
+let pdmStatus = false; // Variable to track if the feature is ON or OFF
+
+cmd({
+    pattern: "pdm",
+    desc: "Notify when a member is promoted or demoted as admin in the group.",
+    react: "🔔",
+    category: "group",
+    use: ".pdm [on/off]",
+    filename: __filename,
+}, async (conn, mek, m, { from, isGroup, isOwner, isAdmins, groupMetadata, groupAdmins, reply }) => {
+    try {
+        if (!isGroup) return reply("❌ This command can only be used in a group.");
+
+        if (m.body === ".pdm on") {
+            if (!isAdmins && !isOwner) return reply("❌ Only admins or the group owner can activate this feature.");
+
+            // Turn on the feature
+            pdmStatus = true;
+            reply("✅ The 'Pdm' feature is now enabled. You will receive notifications when someone is promoted or demoted.");
+        } else if (m.body === ".pdm off") {
+            if (!isAdmins && !isOwner) return reply("❌ Only admins or the group owner can disable this feature.");
+
+            // Turn off the feature
+            pdmStatus = false;
+            reply("✅ The 'Pdm' feature is now disabled. You will no longer receive notifications.");
+        } else {
+            reply("❌ Invalid command. Use '.pdm on' to activate or '.pdm off' to deactivate.");
+        }
+    } catch (error) {
+        console.error("Error in pdm command:", error);
+        reply("❌ An error occurred. Please try again.");
+    }
+});
+
+// Listen for admin change events
+conn.on('group-participants-update', async (update) => {
+    const { action, participants, jid } = update;
+    const group = await conn.groupMetadata(jid);
+
+    if (!pdmStatus) return; // If the feature is off, do nothing
+
+    const isPromoted = action === 'add';
+    const isDemoted = action === 'remove';
+
+    participants.forEach(async (participant) => {
+        const participantName = group.participants.find(p => p.id === participant)?.notify || participant;
+
+        if (isPromoted) {
+            // Notify the group when someone is promoted
+            conn.sendMessage(jid, {
+                text: `🎉 ${participantName} has been promoted to admin.`,
+                mentions: [participant],
+            });
+
+            // Notify the creator privately
+            const owner = group.owner;
+            if (owner) {
+                conn.sendMessage(owner, {
+                    text: `🔔 ${participantName} has been promoted to admin in ${group.subject}.`,
+                });
+            }
+        }
+
+        if (isDemoted) {
+            // Notify the group when someone is demoted
+            conn.sendMessage(jid, {
+                text: `⚠️ ${participantName} has been demoted from admin.`,
+                mentions: [participant],
+            });
+
+            // Notify the creator privately
+            const owner = group.owner;
+            if (owner) {
+                conn.sendMessage(owner, {
+                    text: `🔔 ${participantName} has been demoted from admin in ${group.subject}.`,
+                });
+            }
+        }
+    });
+});
