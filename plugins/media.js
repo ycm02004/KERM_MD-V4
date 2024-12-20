@@ -105,4 +105,4 @@ function sendDailyFactAt6AM(conn, reply) {
     setTimeout(() => {
         sendDailyFact(conn, reply); // Send the first fact
     }, timeUntilNextRun);
-});
+}
