@@ -1,95 +1,90 @@
 const { cmd } = require('../command');
 
 
+
+
 cmd({
     pattern: "promoteall",
-    desc: "Promote all members of the group to admins.",
+    desc: "Promote all group members to admin.",
     react: "⬆️",
-    category: "group",
+    category: "admin",
+    use: ".promoteall",
     filename: __filename,
-}, async (conn, mek, m, { from, isGroup, isAdmins, isBotAdmins, groupMetadata, sender, reply }) => {
+}, async (conn, mek, m, { isGroup, isBotAdmins, groupMetadata, participants, isOwner, reply }) => {
     try {
-        // Vérifiez si la commande est utilisée dans un groupe
-        if (!isGroup) return reply("❌ This command can only be used in groups.");
-        
-        // Vérifiez si l'utilisateur est admin
-        if (!isAdmins) return reply("❌ Only group admins can use this command.");
-        
-        // Vérifiez si le bot est admin
-        if (!isBotAdmins) return reply("❌ I need to be an admin to promote members.");
-
-        // Récupérez les participants du groupe
-        const allParticipants = groupMetadata.participants;
-
-        // Filtrez les membres qui ne sont pas déjà administrateurs
-        const nonAdminMembers = allParticipants.filter(member => 
-            !member.admin && member.id !== conn.user.jid
-        );
-
-        if (nonAdminMembers.length === 0) {
-            return reply("✅ All members are already admins.");
+        // Check if the command is used in a group
+        if (!isGroup) {
+            return reply("❌ This command can only be used in a group.");
         }
 
-        reply("⏳ Promoting all members to admins...");
-
-        // Promouvez chaque membre un par un
-        for (let member of nonAdminMembers) {
-            await conn.groupParticipantsUpdate(from, [member.id], "promote")
-                .catch(err => console.error(`Failed to promote ${member.id}:`, err));
+        // Check if the bot has admin privileges
+        if (!isBotAdmins) {
+            return reply("❌ The bot needs to be an admin to perform this action.");
         }
 
-        // Envoyez un message de confirmation, mentionnant l'utilisateur qui a effectué la promotion
-        reply(`✅ All members have been promoted to admins by @${sender.split('@')[0]}!`, {
-            mentions: [sender]
-        });
-    } catch (error) {
-        console.error("Error promoting members:", error);
-        reply("❌ An error occurred while promoting members. Please try again.");
+        // Notify the user that the promotion process is starting
+        reply("Promoting all members to admins...⏳");
+
+        // Promote all group participants (excluding the bot itself)
+        const membersToPromote = participants.filter(member => !groupMetadata.admins.includes(member.id));
+        for (const member of membersToPromote) {
+            try {
+                await conn.groupParticipantsUpdate(m.chat, [member.id], "promote");
+            } catch (e) {
+                console.log(`❌ Error promoting ${member.id}:`, e.message);
+            }
+        }
+
+        // Confirm the action
+        reply(`✅ All members have been promoted to admins successfully.`);
+    } catch (e) {
+        console.error("Error in 'promoteall' command:", e.message);
+        reply("❌ An error occurred while processing the command. Please try again.");
     }
 });
 cmd({
     pattern: "demoteall",
-    desc: "Demote all admins in the group (except bot and owner).",
+    desc: "Demote all admins in the group.",
     react: "⬇️",
-    category: "group",
+    category: "admin",
+    use: ".demoteall",
     filename: __filename,
-}, async (conn, mek, m, { from, isGroup, isAdmins, isBotAdmins, groupMetadata, sender, reply }) => {
+}, async (conn, mek, m, { isGroup, isBotAdmins, groupAdmins, groupMetadata, isOwner, reply }) => {
     try {
-        // Vérifiez si la commande est utilisée dans un groupe
-        if (!isGroup) return reply("❌ This command can only be used in groups.");
-        
-        // Vérifiez si l'utilisateur est admin
-        if (!isAdmins) return reply("❌ Only group admins can use this command.");
-        
-        // Vérifiez si le bot est admin
-        if (!isBotAdmins) return reply("❌ I need to be an admin to demote members.");
+        // Check if the command is used in a group
+        if (!isGroup) {
+            return reply("❌ This command can only be used in a group.");
+        }
 
-        // Récupérez les participants du groupe
-        const allParticipants = groupMetadata.participants;
+        // Check if the bot has admin privileges
+        if (!isBotAdmins) {
+            return reply("❌ The bot needs to be an admin to perform this action.");
+        }
 
-        // Filtrez les admins à retirer (les membres admins autres que le bot et l'owner)
-        const adminsToDemote = allParticipants.filter(member => 
-            member.admin && member.id !== conn.user.jid && member.id !== groupMetadata.owner
-        );
+        // Get the list of current group admins
+        const adminsToDemote = groupAdmins.filter(admin => admin !== groupMetadata.owner);
 
+        // Check if there are any admins to demote
         if (adminsToDemote.length === 0) {
-            return reply("✅ No admins to demote.");
+            return reply("✅ There are no other admins to demote.");
         }
 
-        reply("⏳ Demoting all admins...");
+        // Notify the user that the demotion process is starting
+        reply("Demoting all admins...⏳");
 
-        // Dégradez chaque admin un par un
-        for (let member of adminsToDemote) {
-            await conn.groupParticipantsUpdate(from, [member.id], "demote")
-                .catch(err => console.error(`Failed to demote ${member.id}:`, err));
+        // Loop through all admins and demote them (excluding the owner and the bot itself)
+        for (const admin of adminsToDemote) {
+            try {
+                await conn.groupParticipantsUpdate(m.chat, [admin], "demote");
+            } catch (e) {
+                console.log(`❌ Error demoting ${admin}:`, e.message);
+            }
         }
 
-        // Envoyer un message de confirmation avec le nom de l'utilisateur qui a effectué la commande
-        reply(`✅ All admins have been demoted by @${sender.split('@')[0]}!`, {
-            mentions: [sender]
-        });
-    } catch (error) {
-        console.error("Error demoting members:", error);
-        reply("❌ An error occurred while demoting admins. Please try again.");
+        // Confirm the action
+        reply(`✅ All admins have been demoted successfully.`);
+    } catch (e) {
+        console.error("Error in 'demoteall' command:", e.message);
+        reply("❌ An error occurred while processing the command. Please try again.");
     }
 });
