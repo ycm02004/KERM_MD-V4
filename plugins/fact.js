@@ -116,3 +116,47 @@ cmd({
         reply("❌ An error occurred while starting the timer. Please try again.");
     }
 });
+cmd({
+    pattern: "lyrics",
+    desc: "Get the lyrics of a song by title and artist.",
+    react: "🎵",
+    category: "utility",
+    use: ".lyrics <song title> by <artist>",
+    filename: __filename,
+}, async (conn, mek, m, { args, reply }) => {
+    try {
+        if (args.length === 0) {
+            return reply("❌ Please provide a song title and artist.\nExample: `.lyrics Shape of You by Ed Sheeran`");
+        }
+
+        // Parse the user input
+        const input = args.join(" ");
+        const [title, artist] = input.split(" by ").map((str) => str.trim());
+
+        if (!title || !artist) {
+            return reply("❌ Please specify both the song title and the artist.\nExample: `.lyrics Shape of You by Ed Sheeran`");
+        }
+
+        // Notify the user that the lyrics are being fetched
+        reply(`🎵 Searching 🔍 for lyrics of "${title}" by ${artist}...`);
+
+        // Fetch lyrics using an API
+        const response = await axios.get(`https://api.lyrics.ovh/v1/${artist}/${title}`);
+        const lyrics = response.data.lyrics;
+
+        if (!lyrics) {
+            return reply(`❌ Sorry, no lyrics found for "${title}" by ${artist}.`);
+        }
+
+        // Send the lyrics back to the chat
+        reply(`KERM RESULTS\n\n🎶 *${title}* by *${artist}*\n\n${lyrics}`);
+    } catch (error) {
+        console.error("Error fetching lyrics:", error.message);
+
+        if (error.response && error.response.status === 404) {
+            reply("❌ Sorry, no lyrics found for the specified song and artist.");
+        } else {
+            reply("❌ An error occurred while fetching the lyrics. Please try again later.");
+        }
+    }
+});
