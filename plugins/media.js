@@ -361,7 +361,7 @@ cmd({
 
         // Process the audio with Shazam or a similar API
         const response = await axios.post('https://api.audd.io/', {
-            api_token: '088e1380100df1e7832842d31aab7e88,
+            api_token: '716b4ddfa557144ce0a459344fe0c2c9,
             file: fs.createReadStream(audioFilePath),
             return: 'timecode,lyrics,deezer,apple_music,spotify',
         });
