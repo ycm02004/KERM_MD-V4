@@ -53,10 +53,6 @@ async (conn, mek, m, { from }) => {
         await conn.sendMessage(from, { text: 'Sorry, there was an error fetching the owner contact.' }, { quoted: mek });
     }
 });
-
-// Variable to track the bot's mode (private or public)
-let botMode = {};
-
 cmd({
     pattern: "mode",
     desc: "Toggle bot's response mode: private or public.",
