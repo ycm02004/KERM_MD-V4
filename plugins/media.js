@@ -387,3 +387,38 @@ conn.on('group-participants-update', async (update) => {
         }
     });
 });
+cmd({
+    pattern: "quoted",
+    desc: "Resend a deleted message by replying to the deleted message.",
+    react: "🔄",
+    category: "utility",
+    use: ".quoted",
+    filename: __filename,
+}, async (conn, mek, m, { reply, quoted }) => {
+    try {
+        // Check if there is a quoted message
+        if (!quoted) {
+            return reply("❌ Please reply to a deleted message to resend it.");
+        }
+
+        // Get the quoted message
+        const quotedMessage = m.quoted;
+
+        // Check if the quoted message exists
+        if (!quotedMessage) {
+            return reply("❌ The quoted message is no longer available.");
+        }
+
+        // Send the quoted message back to the group or private chat
+        await conn.sendMessage(m.chat, {
+            text: quotedMessage.text || "No text available in this message.",
+            quoted: quotedMessage,
+        });
+
+        reply("✅ The deleted message has been resent.");
+
+    } catch (error) {
+        console.error("Error in quoted command:", error);
+        reply("❌ An error occurred while trying to resend the quoted message.");
+    }
+});
