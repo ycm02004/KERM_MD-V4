@@ -15,53 +15,6 @@ const { cmd } = require('../command');
 let antideleteStatus = {}; // Tracks the ON/OFF status for each chat
 
 cmd({
-    pattern: "antidelete",
-    desc: "Enable or disable the Antidelete feature (ON/OFF).",
-    react: "🛡️",
-    category: "utility",
-    use: ".antidelete [on/off]",
-    filename: __filename,
-}, async (conn, mek, m, { args, reply, from, isGroup }) => {
-    if (!isGroup) {
-        return reply("❌ This command can only be used in groups.");
-    }
-
-    if (args.length === 0) {
-        return reply("❌ Please specify `on` or `off`.\nExample: `.antidelete on`");
-    }
-
-    const option = args[0].toLowerCase();
-    if (option === "on") {
-        antideleteStatus[from] = true;
-        reply("✅ Antidelete has been enabled. Deleted messages will now be logged.");
-    } else if (option === "off") {
-        antideleteStatus[from] = false;
-        reply("❌ Antidelete has been disabled. Deleted messages will no longer be logged.");
-    } else {
-        return reply("❌ Invalid option. Use `on` or `off`.");
-    }
-});
-
-// Listen for message deletions
-conn.ev.on("messages.update", async (updates) => {
-    for (const { key, updateType, message } of updates) {
-        const chatId = key.remoteJid;
-
-        // If antidelete is enabled for the chat
-        if (antideleteStatus[chatId] && updateType === "messageDeleted") {
-            const sender = key.participant || key.remoteJid;
-            const msgContent = message?.message?.conversation || "❌ Unable to fetch deleted content.";
-
-            // Forward the deleted message back to the chat
-            await conn.sendMessage(chatId, {
-                text: `🚨 *Deleted Message Alert!*\nMessage from @${sender.split('@')[0]} was deleted:\n\n${msgContent}`,
-                mentions: [sender],
-            });
-        }
-    }
-});
-// Command for sending the WhatsApp channel link
-cmd({
     pattern: "channel",
     desc: "Get the link to the official WhatsApp channel.",
     react: "📢",
