@@ -142,7 +142,7 @@ cmd({
         reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
 
         // Fetch lyrics using an API
-        const response = await axios.get(`https://api.lyrics.ovh/v1/${artist}/${title}`);
+        const response = await axios.get(`https://api.vagalume.com.br/search.php`);
         const lyrics = response.data.lyrics;
 
         if (!lyrics) {
