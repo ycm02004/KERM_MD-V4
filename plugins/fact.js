@@ -150,7 +150,7 @@ cmd({
         }
 
         // Send the lyrics back to the chat
-        reply(`*KERM RESULT*\n\n🎶 *${title}* by *${artist}*\n\n${lyrics}`);
+        reply(`*KERM RESULT*\n\n🎶 *${title}* BY *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
 
