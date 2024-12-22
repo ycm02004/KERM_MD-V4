@@ -158,5 +158,6 @@ cmd({
             reply("❌ Sorry, no lyrics found for the specified artist and song title.");
         } else {
             reply("❌ An error occurred while fetching the lyrics. Please try again later.");
+        }
     }
  });
