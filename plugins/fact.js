@@ -150,7 +150,7 @@ cmd({
         }
 
         // Send the lyrics back to the chat
-        reply(`*KERM RESULT*\n\n🎶 *${title}* BY *${artist}*\n\n${lyrics}`);
+        reply(`*KERM RESULT*\n\n🎶 *${title}* by *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
 
@@ -158,6 +158,5 @@ cmd({
             reply("❌ Sorry, no lyrics found for the specified artist and song title.");
         } else {
             reply("❌ An error occurred while fetching the lyrics. Please try again later.");
-        }
     }
-});
+ });
