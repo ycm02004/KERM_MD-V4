@@ -139,13 +139,10 @@ cmd({
         }
 
         // Notify the user that the lyrics are being fetched
-        reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
+        reply(`🎵 Searching for lyrics of "${title}" BY ${artist}...`);
 
-        // Lyrics.ovh API URL
-        const url = `https://lyrics.ovh/v1/${artist}/${title}`;
-
-        // Fetch lyrics using Lyrics.ovh API
-        const response = await axios.get(url);
+        // Fetch lyrics using an API
+        const response = await axios.get(`https://lyrics.ovh/v1/${artist}/${title}`);
         const lyrics = response.data.lyrics;
 
         if (!lyrics) {
@@ -153,9 +150,14 @@ cmd({
         }
 
         // Send the lyrics back to the chat
-        reply(`🎶 *${title}* by *${artist}*\n\n${lyrics}`);
+        reply(`*KERM RESULT*\n\n🎶 *${title}* BY *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
-        reply("❌ An error occurred while fetching lyrics. Please try again later.");
+
+        if (error.response && error.response.status === 404) {
+            reply("❌ Sorry, no lyrics found for the specified artist and song title.");
+        } else {
+            reply("❌ An error occurred while fetching the lyrics. Please try again later.");
+        }
     }
 });
