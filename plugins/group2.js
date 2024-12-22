@@ -10,7 +10,6 @@ contact dev2 237650564445 ♻️
 const { cmd } = require('../command');
 let antideleteStatus = {}; // Tracks the ON/OFF status for each chat
 
-const { cmd } = require('../command');
 
 cmd({
     pattern: "channel",
