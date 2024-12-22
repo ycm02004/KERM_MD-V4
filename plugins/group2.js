@@ -10,24 +10,28 @@ contact dev2 237650564445 ♻️
 const { cmd } = require('../command');
 let antideleteStatus = {}; // Tracks the ON/OFF status for each chat
 
+const { cmd } = require('../command');
+
 cmd({
     pattern: "channel",
-    desc: "Get the link to the official WhatsApp channel.",
-    react: "📢",
+    desc: "Send an invitation to join the WhatsApp channel.",
+    react: "🔗",
     category: "utility",
     use: ".channel",
     filename: __filename,
 }, async (conn, mek, m, { reply }) => {
     try {
-        // Define the channel link inside the command
-        const channelLink = "https://whatsapp.com/channel/0029Vafn6hc7DAX3fzsKtn45";
+        // Remplacez par le JID de votre chaîne WhatsApp
+        const channelJid = "120363321386877609@newsletter"; // Exemple de JID pour la chaîne
 
-        // Send the channel link to the user
-        reply(`Here's 💁🏽 the link to our official WhatsApp Kerm channel:\n\n${channelLink}\n\n> Join us to stay updated with the latest news and announcements🧞‍♂️.`);
+        // Message d'invitation à envoyer à l'utilisateur
+        const inviteMessage = `🔔 *Rejoignez notre chaîne WhatsApp !*\n\nRecevez les dernières mises à jour et annonces.\n\n👉 Cliquez sur le lien ci-dessous pour rejoindre :\nhttps://wa.me/${channelJid}`;
+
+        // Envoyer le message à l'utilisateur
+        await reply(inviteMessage);
     } catch (error) {
-        // Log and notify about any errors
-        console.error("Error sending channel link:", error.message);
-        reply("❌ Sorry, an error occurred while trying to send the channel link.");
+        console.error("Error while sending channel invitation:", error.message);
+        reply("❌ Une erreur s'est produite lors de l'envoi de l'invitation. Veuillez réessayer.");
     }
 });
 // Command for sending the support group or page link
