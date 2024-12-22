@@ -160,4 +160,4 @@ cmd({
             reply("❌ An error occurred while fetching the lyrics. Please try again later.");
         }
     }
- });
+});
