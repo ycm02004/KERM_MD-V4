@@ -118,46 +118,44 @@ cmd({
 });
 cmd({
     pattern: "lyrics",
-    alias: "lyric",
-    desc: "Get the lyrics of a song by artist and title.",
-    react: "🎵",
-    category: "utility",
+    desc: "Get lyrics from Vagalume.",
+    react: "🎶",
+    category: "music",
     use: ".lyrics <artist> <song title>",
-    filename: __filename,
+    filename: __filename
 }, async (conn, mek, m, { args, reply }) => {
     try {
+        // Check if the user has provided both artist and song title
         if (args.length < 2) {
-            return reply("❌ Please provide the artist and song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
+            return reply("❌ Please provide both the artist and the song title. Example: `.lyrics Dadju Reine`");
         }
 
-        // Parse the user input
-        const artist = args[0]; // First word is the artist's name
-        const title = args.slice(1).join(" "); // The rest is the song title
+        // Extract artist and title from the user input
+        const artist = args[0].trim();  // First argument is the artist
+        const title = args.slice(1).join(" ").trim();  // Join the remaining arguments as the song title
 
-        if (!artist || !title) {
-            return reply("❌ Please specify both the artist and the song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
-        }
+        // Fetch the lyrics from Vagalume API
+        const response = await axios.get(`https://api.vagalume.com.br/search.php`, {
+            params: {
+                art: artist,
+                mus: title,
+                fmt: 'json'
+            }
+        });
 
-        // Notify the user that the lyrics are being fetched
-        reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
+        // Extract the lyrics from the response
+        const lyrics = response.data.mus[0]?.text;
 
-        // Fetch lyrics using an API
-        const response = await axios.get(`https://api.vagalume.com.br/search.php`);
-        const lyrics = response.data.lyrics;
-
+        // If no lyrics were found, notify the user
         if (!lyrics) {
-            return reply(`❌ Sorry, no lyrics found for "${title}" by ${artist}.`);
+            return reply(`❌ No lyrics found for "${title}" by ${artist}.`);
         }
 
-        // Send the lyrics back to the chat
-        reply(`*KERM RESULT*\n\n🎶 *${title}* by *${artist}*\n\n${lyrics}`);
+        // Send the lyrics back to the user
+        reply(`🎶 *${title}* by *${artist}*\n\n${lyrics}`);
     } catch (error) {
-        console.error("Error fetching lyrics:", error.message);
-
-        if (error.response && error.response.status === 404) {
-            reply("❌ Sorry, no lyrics found for the specified artist and song title.");
-        } else {
-            reply("❌ An error occurred while fetching the lyrics. Please try again later.");
-        }
+        // If an error occurred while fetching the lyrics, notify the user
+        console.error("Error fetching lyrics:", error);
+        reply("❌ An error occurred while fetching lyrics. Please try again later.");
     }
 });
