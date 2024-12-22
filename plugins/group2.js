@@ -23,7 +23,7 @@ cmd({
         const channelLink = "https://whatsapp.com/channel/0029Vafn6hc7DAX3fzsKtn45";
 
         // Send the channel link to the user
-        reply(`*Here's the link to our official WhatsApp Kerm channel:\n\n${channelLink}*\n\n> Join us to stay updated with the latest news and announcements.`);
+        reply(`*Here's 💁🏽 the link to our official WhatsApp Kerm channel*:\n\n${channelLink}\n\n> Join us to stay updated with the latest news and announcements🧞‍♂️.`);
     } catch (error) {
         // Log and notify about any errors
         console.error("Error sending channel link:", error.message);
@@ -44,7 +44,7 @@ cmd({
         const supportLink = "https://chat.whatsapp.com/L5MM9j04Caz4y2EZHRnD1Z";
 
         // Send the support link to the user
-        reply(`*Need help or have questions ? Join kerm support group:\n\n${supportLink}*\n\n> Feel free to ask your questions or report issues.`);
+        reply(`*Need help 💁🏽 or have questions ? Join kerm support group*:\n\n${supportLink}\n\n> Feel free to ask your questions or report issues🙇🏽.`);
     } catch (error) {
         // Log and notify about any errors
         console.error("Error sending support link:", error.message);
