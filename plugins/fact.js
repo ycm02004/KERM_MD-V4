@@ -141,9 +141,16 @@ cmd({
         // Notify the user that the lyrics are being fetched
         reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
 
-        // Fetch lyrics using an API
-        const response = await axios.get(`https://lyrics.ovh/v1/${artist}/${title}`);
-        const lyrics = response.data.lyrics;
+        // Fetch lyrics using Vagalume API
+        const response = await axios.get(`https://api.vagalume.com.br/search.php`, {
+            params: {
+                art: artist,
+                mus: title,
+                fmt: 'json'
+            }
+        });
+
+        const lyrics = response.data.mus[0]?.text;
 
         if (!lyrics) {
             return reply(`❌ Sorry, no lyrics found for "${title}" by ${artist}.`);
@@ -153,11 +160,6 @@ cmd({
         reply(`*KERM RESULT*\n\n🎶 *${title}* BY *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
-
-        if (error.response && error.response.status === 404) {
-            reply("❌ Sorry, no lyrics found for the specified artist and song title.");
-        } else {
-            reply("❌ An error occurred while fetching the lyrics. Please try again later.");
-        }
+        reply("❌ An error occurred while fetching lyrics. Please try again later.");
     }
 });
