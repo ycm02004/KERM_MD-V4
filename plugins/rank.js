@@ -1,6 +1,6 @@
 const { cmd } = require('../command');
 
-// In-memory storage for levels
+// In-memory storage for levels (no file, temporary data)
 let levels = {};
 
 // Command definition
@@ -13,8 +13,6 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { reply, isGroup, mentionedJid }) => {
     try {
-        console.log("Command triggered..."); // Debug start point
-
         // Find the target user (mention, reply, or self)
         let target = mentionedJid.length
             ? mentionedJid[0]
@@ -23,24 +21,17 @@ cmd({
             : m.sender;
 
         if (!target) {
-            console.log("No target found.");
             return reply("❌ Please mention a user or reply to their message.");
         }
-
-        console.log("Target user:", target); // Debug target
 
         // Initialize user data if not present
         if (!levels[target]) {
             levels[target] = { experience: 0, level: 0 };
         }
 
-        console.log("User data before update:", levels[target]); // Debug user data
-
         // Add XP and calculate level
         levels[target].experience += 10; // Add experience points
         levels[target].level = Math.floor(0.1 * Math.sqrt(levels[target].experience)); // Calculate level
-
-        console.log("User data after update:", levels[target]); // Debug user data after update
 
         // Progression details
         const userData = levels[target];
@@ -48,15 +39,11 @@ cmd({
         const currentLevelXP = Math.pow(userData.level / 0.1, 2);
         const progressPercent = Math.floor(((userData.experience - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
 
-        console.log("Progress details:", { currentLevelXP, nextLevelXP, progressPercent }); // Debug progression
-
         // Progress bar
         const progressBar = "⭐".repeat(progressPercent / 10) + "⚪".repeat(10 - progressPercent / 10);
 
         // Image URL (customize this to generate better images)
         const levelImageURL = `https://via.placeholder.com/500x300.png?text=Level+${userData.level}`;
-
-        console.log("Image URL:", levelImageURL); // Debug image URL
 
         // Caption for the message
         const caption = 
@@ -65,7 +52,7 @@ cmd({
             `🔝 *Level*: ${userData.level}\n` +
             `✨ *XP*: ${userData.experience}\n` +
             `📊 *Progress*: ${progressPercent}%\n${progressBar}\n` +
-            `\nPOWERED BY KERM`;
+            `\n> POWERED BY KERM`;
 
         // Send rank details with image
         await conn.sendMessage(
@@ -73,9 +60,6 @@ cmd({
             { image: { url: levelImageURL }, caption, mentions: [target] },
             { quoted: mek }
         );
-
-        console.log("Rank details sent successfully."); // Debug success
-
     } catch (err) {
         console.error("Error in rank command:", err); // Log the error
         reply(`❌ An error occurred: ${err.message || "Unknown error"}`); // Provide details in chat
