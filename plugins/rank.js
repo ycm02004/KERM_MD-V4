@@ -1,6 +1,6 @@
 const { cmd } = require('../command');
 
-// Simulate a database with user levels (in-memory storage)
+// Simulated in-memory storage for user levels
 const userLevels = {};
 
 // Function to calculate level based on XP
@@ -17,10 +17,7 @@ cmd({
     try {
         let target;
 
-        // Log incoming data for debugging
-        console.log("Command triggered:", { mentionedJid, quoted: m.quoted, sender: m.sender });
-
-        // Check if a user was mentioned, if not check if there is a reply
+        // Determine the target user
         if (mentionedJid?.length > 0) {
             target = mentionedJid[0]; // First mentioned user
         } else if (m.quoted && m.quoted.sender) {
@@ -49,7 +46,7 @@ cmd({
         const progressPercent = Math.floor(((userData.experience - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
         const progressBar = "⭐".repeat(progressPercent / 10) + "⚪".repeat(10 - progressPercent / 10);
 
-        // Display level as an image (you can customize this)
+        // Image URL for the level (optional)
         const levelImageURL = `https://via.placeholder.com/500x300.png?text=Level+${level}`;
         const caption = `📊 *Rank Information*\n\n👤 *User*: @${
             target.split("@")[0]
@@ -57,17 +54,21 @@ cmd({
             userData.messages
         }\n✨ *XP*: ${userData.experience}\n\nPOWERED BY KERM`;
 
-        // Log information for debugging
-        console.log("Rank Information:", { target, userData, level, progressPercent });
+        // Attempt to send the image with the caption
+        try {
+            await conn.sendMessage(
+                m.chat,
+                { image: { url: levelImageURL }, caption, mentions: [target] },
+                { quoted: mek }
+            );
+        } catch (imageError) {
+            console.error("Image generation failed:", imageError);
 
-        await conn.sendMessage(
-            m.chat,
-            { image: { url: levelImageURL }, caption, mentions: [target] },
-            { quoted: mek }
-        );
+            // If the image fails, fallback to sending text-only message
+            reply(caption);
+        }
     } catch (error) {
-        // Log the error details for debugging
         console.error("Error in rank command:", error);
-        reply(`❌ An error occurred: ${error.message}`);
+        reply("❌ An error occurred while fetching the rank. Please try again.");
     }
 });
