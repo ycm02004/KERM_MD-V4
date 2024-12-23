@@ -59,7 +59,7 @@ cmd({
             target.split("@")[0]
         }\n🔝 *Level*: ${level}\n🔄 *Progression*: ${progressPercent}%\n${progressBar}\n📩 *Messages Sent*: ${
             userData.messages
-        }\n✨ *XP*: ${userData.experience}\n\nPOWERED BY KERM`;
+        }\n✨ *XP*: ${userData.experience}\n\n> 🧞‍♂️POWERED BY KERM🧞‍♂️`;
 
         // Send the image and caption together
         await conn.sendMessage(
