@@ -1,21 +1,13 @@
 const { cmd } = require('../command');
-const fs = require('fs');
-const path = require('path');
 
-// Load or initialize levels.json
-const levelsFile = path.resolve(__dirname, '../levels.json');
-let levels = fs.existsSync(levelsFile) ? JSON.parse(fs.readFileSync(levelsFile)) : {};
+// In-memory storage for user levels (will reset every time the bot restarts)
+let levels = {};
 
-// Function to save levels to the JSON file
-const saveLevels = () => {
-    fs.writeFileSync(levelsFile, JSON.stringify(levels, null, 2));
-};
-
-// Function to calculate the user's level based on their experience points
+// Function to calculate level based on experience points
 const calculateLevel = (xp) => Math.floor(0.1 * Math.sqrt(xp));
 
 cmd({
-    pattern: "rank",  // Command to check the rank of a user
+    pattern: "rank",
     desc: "Check the level of a user in a group or private chat.",
     react: "📊",
     category: "utility",
@@ -34,7 +26,7 @@ cmd({
             return reply("❌ Please mention a user or reply to their message to see their rank.");
         }
 
-        // Initialize user data if it doesn't exist in the levels file
+        // Initialize user data if it doesn't exist in memory
         if (!levels[target]) {
             levels[target] = { experience: 0, messages: 0, level: 0 };
         }
@@ -78,9 +70,6 @@ cmd({
             { image: { url: levelImageURL }, caption, mentions: [target] },
             { quoted: mek }
         );
-
-        // Save updated levels to JSON
-        saveLevels();
     } catch (error) {
         console.error("Error in Rank command:", error);
         reply("❌ An error occurred while fetching the rank. Please try again.");
