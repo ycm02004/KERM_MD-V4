@@ -51,15 +51,22 @@ cmd({
         const progressPercent = Math.floor(((userData.experience - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
         const progressBar = "⭐".repeat(progressPercent / 10) + "⚪".repeat(10 - progressPercent / 10);
 
-        // Send rank information in text only for speed
+        // URL of the image for the rank
+        const levelImageURL = "https://i.imgur.com/7S8lA6m.png"; // Replace with your desired image URL
+        
+        // Send rank information in text and image
         const caption = `📊 *Rank Information*\n\n👤 *User*: @${
             target.split("@")[0]
         }\n🔝 *Level*: ${level}\n🔄 *Progression*: ${progressPercent}%\n${progressBar}\n📩 *Messages Sent*: ${
             userData.messages
-        }\n✨ *XP*: ${userData.experience}\n\n> 🧞‍♂️POWERED BY KERM🧞‍♂️`;
+        }\n✨ *XP*: ${userData.experience}\n\nPOWERED BY KERM`;
 
-        // Directly send the rank information as text
-        reply(caption);
+        // Send the image and caption together
+        await conn.sendMessage(
+            m.chat,
+            { image: { url: levelImageURL }, caption, mentions: [target] },
+            { quoted: mek }
+        );
 
     } catch (error) {
         console.error("Error in rank command:", error);
