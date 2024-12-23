@@ -1,67 +1,66 @@
 const { cmd } = require('../command');
 
-// In-memory storage for levels (no file, temporary data)
-let levels = {};
+// Simulate a database with user levels (in-memory storage)
+const userLevels = {};
 
-// Command definition
+// Function to calculate level based on XP
+const calculateLevel = (xp) => Math.floor(0.1 * Math.sqrt(xp));
+
 cmd({
     pattern: "rank",
-    desc: "Check the level and experience of a user.",
+    desc: "Check the level of a user.",
     react: "📊",
     category: "utility",
     use: ".rank [@mention or reply]",
-    filename: __filename
+    filename: __filename,
 }, async (conn, mek, m, { reply, isGroup, mentionedJid }) => {
     try {
-        // Find the target user (mention, reply, or self)
-        let target = mentionedJid.length
-            ? mentionedJid[0]
-            : m.quoted?.sender
-            ? m.quoted.sender
-            : m.sender;
+        let target;
+
+        // Check if a user was mentioned, if not check if there is a reply
+        if (mentionedJid.length > 0) {
+            target = mentionedJid[0]; // First mentioned user
+        } else if (m.quoted && m.quoted.sender) {
+            target = m.quoted.sender; // User who sent the quoted message
+        } else {
+            target = m.sender; // Default to the sender if no mention or reply
+        }
 
         if (!target) {
-            return reply("❌ Please mention a user or reply to their message.");
+            return reply("❌ Please mention a user or reply to their message to check their rank.");
         }
 
         // Initialize user data if not present
-        if (!levels[target]) {
-            levels[target] = { experience: 0, level: 0 };
+        if (!userLevels[target]) {
+            userLevels[target] = { experience: 0, messages: 0 };
         }
 
-        // Add XP and calculate level
-        levels[target].experience += 10; // Add experience points
-        levels[target].level = Math.floor(0.1 * Math.sqrt(levels[target].experience)); // Calculate level
+        // Simulate experience gain
+        const userData = userLevels[target];
+        userData.messages += 1;
+        userData.experience += Math.floor(Math.random() * 10) + 5;
 
-        // Progression details
-        const userData = levels[target];
-        const nextLevelXP = Math.pow((userData.level + 1) / 0.1, 2);
-        const currentLevelXP = Math.pow(userData.level / 0.1, 2);
+        const level = calculateLevel(userData.experience);
+        const nextLevelXP = Math.pow((level + 1) / 0.1, 2);
+        const currentLevelXP = Math.pow(level / 0.1, 2);
         const progressPercent = Math.floor(((userData.experience - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
-
-        // Progress bar
         const progressBar = "⭐".repeat(progressPercent / 10) + "⚪".repeat(10 - progressPercent / 10);
 
-        // Image URL (customize this to generate better images)
-        const levelImageURL = `https://via.placeholder.com/500x300.png?text=Level+${userData.level}`;
+        // Display level as an image (you can customize this)
+        const levelImageURL = `https://via.placeholder.com/500x300.png?text=Level+${level}`;
+        const caption = `📊 *Rank Information*\n\n👤 *User*: @${
+            target.split("@")[0]
+        }\n🔝 *Level*: ${level}\n🔄 *Progression*: ${progressPercent}%\n${progressBar}\n📩 *Messages Sent*: ${
+            userData.messages
+        }\n✨ *XP*: ${userData.experience}\n\n> 🧞‍♂️POWERED BY KERM🧞‍♂️`;
 
-        // Caption for the message
-        const caption = 
-            `🎖️ *Rank Details*\n` +
-            `👤 *User*: @${target.split("@")[0]}\n` +
-            `🔝 *Level*: ${userData.level}\n` +
-            `✨ *XP*: ${userData.experience}\n` +
-            `📊 *Progress*: ${progressPercent}%\n${progressBar}\n` +
-            `\n> POWERED BY KERM`;
-
-        // Send rank details with image
         await conn.sendMessage(
             m.chat,
             { image: { url: levelImageURL }, caption, mentions: [target] },
             { quoted: mek }
         );
-    } catch (err) {
-        console.error("Error in rank command:", err); // Log the error
-        reply(`❌ An error occurred: ${err.message || "Unknown error"}`); // Provide details in chat
+    } catch (error) {
+        console.error("Error in rank command:", error);
+        reply("❌ An error occurred. Please try again.");
     }
 });
