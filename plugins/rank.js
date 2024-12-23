@@ -52,7 +52,7 @@ cmd({
         const progressBar = "⭐".repeat(progressPercent / 10) + "⚪".repeat(10 - progressPercent / 10);
 
         // URL of the image for the rank
-        const levelImageURL = "https://i.imgur.com/7S8lA6m.png"; // Replace with your desired image URL
+        const levelImageURL = "https://imgur.com/a/8eV6kMk"; // Replace with your desired image URL
         
         // Send rank information in text and image
         const caption = `📊 *Rank Information*\n\n👤 *User*: @${
