@@ -7,7 +7,7 @@ const userLevels = {};
 const calculateLevel = (xp) => Math.floor(0.1 * Math.sqrt(xp));
 
 cmd({
-    pattern: "rank",
+    pattern: "rank",  // Adjusted to rank
     desc: "Check the level of a user.",
     react: "📊",
     category: "utility",
@@ -18,11 +18,16 @@ cmd({
         let target;
 
         // Determine the target user
+        // Case 1: If there's a mention, use the mentioned user.
         if (mentionedJid?.length > 0) {
             target = mentionedJid[0]; // First mentioned user
-        } else if (m.quoted && m.quoted.sender) {
+        } 
+        // Case 2: If the user is replying to a message, use the sender of the quoted message.
+        else if (m.quoted && m.quoted.sender) {
             target = m.quoted.sender; // User who sent the quoted message
-        } else {
+        } 
+        // Case 3: If neither mention nor reply, use the sender of the command.
+        else {
             target = m.sender; // Default to the sender if no mention or reply
         }
 
