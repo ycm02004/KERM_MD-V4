@@ -46,21 +46,16 @@ cmd({
         const progressPercent = Math.floor(((userData.experience - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
         const progressBar = "⭐".repeat(progressPercent / 10) + "⚪".repeat(10 - progressPercent / 10);
 
-        // Static image URL for the level
-        const levelImageURL = `https://via.placeholder.com/500x300.png?text=Rank`;
-
+        // Send rank information in text only for speed
         const caption = `📊 *Rank Information*\n\n👤 *User*: @${
             target.split("@")[0]
         }\n🔝 *Level*: ${level}\n🔄 *Progression*: ${progressPercent}%\n${progressBar}\n📩 *Messages Sent*: ${
             userData.messages
         }\n✨ *XP*: ${userData.experience}\n\n> 🧞‍♂️POWERED BY KERM🧞‍♂️`;
 
-        // Send the static image with the caption
-        await conn.sendMessage(
-            m.chat,
-            { image: { url: levelImageURL }, caption, mentions: [target] },
-            { quoted: mek }
-        );
+        // Directly send the rank information as text
+        reply(caption);
+
     } catch (error) {
         console.error("Error in rank command:", error);
         reply("❌ An error occurred while fetching the rank. Please try again.");
