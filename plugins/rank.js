@@ -9,7 +9,7 @@ const calculateLevel = (xp) => Math.floor(0.1 * Math.sqrt(xp));
 
 cmd({
     pattern: "rank",
-    alias: ["level, "levels"],
+    alias: ["level", "levels"],
     desc: "Check the rank of a user in a group or private chat.",
     react: "📊",
     category: "utility",
