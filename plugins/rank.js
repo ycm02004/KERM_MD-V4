@@ -17,8 +17,11 @@ cmd({
     try {
         let target;
 
+        // Log incoming data for debugging
+        console.log("Command triggered:", { mentionedJid, quoted: m.quoted, sender: m.sender });
+
         // Check if a user was mentioned, if not check if there is a reply
-        if (mentionedJid.length > 0) {
+        if (mentionedJid?.length > 0) {
             target = mentionedJid[0]; // First mentioned user
         } else if (m.quoted && m.quoted.sender) {
             target = m.quoted.sender; // User who sent the quoted message
@@ -52,7 +55,10 @@ cmd({
             target.split("@")[0]
         }\n🔝 *Level*: ${level}\n🔄 *Progression*: ${progressPercent}%\n${progressBar}\n📩 *Messages Sent*: ${
             userData.messages
-        }\n✨ *XP*: ${userData.experience}\n\n> 🧞‍♂️POWERED BY KERM🧞‍♂️`;
+        }\n✨ *XP*: ${userData.experience}\n\nPOWERED BY KERM`;
+
+        // Log information for debugging
+        console.log("Rank Information:", { target, userData, level, progressPercent });
 
         await conn.sendMessage(
             m.chat,
@@ -60,7 +66,8 @@ cmd({
             { quoted: mek }
         );
     } catch (error) {
+        // Log the error details for debugging
         console.error("Error in rank command:", error);
-        reply("❌ An error occurred. Please try again.");
+        reply(`❌ An error occurred: ${error.message}`);
     }
 });
