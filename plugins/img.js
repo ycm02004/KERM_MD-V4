@@ -28,7 +28,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
         // Fetch image URLs from Google Custom Search API
         const searchQuery = encodeURIComponent(q);
-        const url = `https://api.pexels.com/v1/search?query=maid&per_page=5`;
+        const url = `https://www.pinterest.com/search/pins/?q=${query}`;
         
         const response = await axios.get(url);
         const data = response.data;
