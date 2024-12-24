@@ -118,6 +118,7 @@ cmd({
 });
 cmd({
     pattern: "lyrics",
+    alias: ["lyric"],
     desc: "Get the lyrics of a song by artist and title.",
     react: "🎵",
     category: "utility",
@@ -148,7 +149,7 @@ cmd({
         }
 
         // Notify the user that the lyrics are being fetched
-        reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
+        reply(`🎵 Searching for lyrics of "${title}" BY ${artist}...`);
 
         // Fetch lyrics using an API
         const response = await axios.get(`https://api.lyrics.ovh/v1/${artist}/${title}`);
@@ -159,7 +160,7 @@ cmd({
         }
 
         // Send the lyrics back to the chat
-        reply(`🎶 *${title}* by *${artist}*\n\n${lyrics}`);
+        reply(`> 🍓KERM LYRICS RESULT🍓\n\nTitle🎧 *${title}*\nArtist🗣️ *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
 
