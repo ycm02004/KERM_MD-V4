@@ -118,7 +118,6 @@ cmd({
 });
 cmd({
     pattern: "lyrics",
-    alias: ["lyric"],
     desc: "Get the lyrics of a song by artist and title.",
     react: "🎵",
     category: "utility",
@@ -127,19 +126,29 @@ cmd({
 }, async (conn, mek, m, { args, reply }) => {
     try {
         if (args.length < 2) {
-            return reply("❌ Please provide the artist and song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
+            return reply("❌ Please provide the artist and song title.\nExample: `.lyrics Ed Sheeran - Shape of You`");
         }
 
-        // Parse the user input
-        const artist = args[0]; // First word is the artist's name
-        const title = args.slice(1).join(" "); // The rest is the song title
+        // Parsing input using delimiter
+        let artist, title;
+        if (args.includes('-')) {
+            const delimiterIndex = args.indexOf('-');
+            artist = args.slice(0, delimiterIndex).join(' ').trim();
+            title = args.slice(delimiterIndex + 1).join(' ').trim();
+        } else if (args[0].startsWith('"') && args[args.length - 1].endsWith('"')) {
+            artist = args.slice(0, -1).join(' ').replace(/"/g, '').trim();
+            title = args.slice(-1).join(' ');
+        } else {
+            artist = args[0];
+            title = args.slice(1).join(' ');
+        }
 
         if (!artist || !title) {
-            return reply("❌ Please specify both the artist and the song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
+            return reply("❌ Please specify both the artist and the song title.\nExample: `.lyrics \"Joe Dwé Filé\" Shape of You`");
         }
 
         // Notify the user that the lyrics are being fetched
-        reply(`🎵 Searching for lyrics of "${title}" BY ${artist}...`);
+        reply(`🎵 Searching for lyrics of "${title}" by ${artist}...`);
 
         // Fetch lyrics using an API
         const response = await axios.get(`https://api.lyrics.ovh/v1/${artist}/${title}`);
@@ -150,7 +159,7 @@ cmd({
         }
 
         // Send the lyrics back to the chat
-        reply(`> 🧞‍♂️KERM RESULT🧞‍♂️\n\n🎶 *${title}* BY *${artist}*\n\n${lyrics}`);
+        reply(`🎶 *${title}* by *${artist}*\n\n${lyrics}`);
     } catch (error) {
         console.error("Error fetching lyrics:", error.message);
 
