@@ -121,6 +121,7 @@ const { cmd } = require('../command');
 
 cmd({
     pattern: "lyrics",
+    alias: ["lyric"],
     desc: "Get the lyrics of a song by artist and title.",
     react: "🎵",
     category: "utility",
