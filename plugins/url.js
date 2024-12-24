@@ -30,57 +30,47 @@ cmd({
     const { reply, quoted } = options;
 
     try {
-        // Log message content to understand the structure
-        console.log('Message content:', m);
-        console.log('Quoted message:', m.quoted ? 'Yes' : 'No');
+        // Vérification si le message est une image
         let targetMessage = m.quoted ? m.quoted : m;
-
-        // Ensure there's a mime type and it's an image
-        let mimeType = targetMessage.mimetype || '';
-        if (!mimeType.startsWith('image/')) {
+        if (!targetMessage.mimetype || !targetMessage.mimetype.startsWith('image/')) {
             return reply("Please reply to an image.");
         }
 
-        // Download the image data
+        // Téléchargement de l'image
         let imageData = await targetMessage.download();
         let tempPath = path.join(os.tmpdir(), 'TempImage');
         fs.writeFileSync(tempPath, imageData);
 
-        // Prepare FormData for image upload
+        // Préparation du formulaire pour l'upload
         let formData = new FormData();
         formData.append("image", fs.createReadStream(tempPath));
 
-        // Log the image data size before uploading
-        console.log("Image size:", imageData.length, "bytes");
-
-        // Upload the image to the imgbb API
+        // Upload de l'image sur l'API imgbb
         let response = await axios.post(
             'https://api.imgbb.com/1/upload?key=06d00f0e4520243a32b58138765a2ecc',
             formData,
             { headers: { ...formData.getHeaders() } }
         );
 
-        // Check for successful upload and retrieve the image URL
         if (response.data && response.data.data && response.data.data.url) {
             let imageUrl = response.data.data.url;
 
-            // Delete the temporary file after upload
+            // Supprimer le fichier temporaire après l'upload
             fs.unlinkSync(tempPath);
 
-            // Prepare the caption with the image URL and size
+            // Réponse avec l'URL de l'image
             const caption = `*SILENT-SOBX-MD IMG URL📸*\n\n` +
                             `> *Size:* ${imageData.length} Byte(s)\n` +
                             `> *URL:* ${imageUrl}\n\n` +
                             `> *⚖️ UPLOAD - : © BY SILENTLOVER432*`;
 
-            // Send the result
+            // Envoi du résultat
             m.reply(caption);
         } else {
-            throw new Error("Error while uploading the image.");
+            reply("An error occurred while uploading the image.");
         }
-
     } catch (error) {
-        console.error("Error occurred:", error);
-        reply(`Error: ${error.message}`);
+        console.error(error);
+        reply("An error occurred, please try again.");
     }
 });
