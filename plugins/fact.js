@@ -116,41 +116,50 @@ cmd({
         reply("❌ An error occurred while starting the timer. Please try again.");
     }
 });
+const axios = require('axios');
+const { cmd } = require('../command');
+
 cmd({
-  pattern: "lyrics",
-  alias: ["songlyrics", "lyric"],
-  desc: "Searches for song lyrics using artist and song title.",
-  category: "music",
-  use: "<artist> <song title>",
-  filename: __filename
-}, async (_0x1cec94, _0x4f8131) => {
-  try {
-    if (!_0x4f8131 || !_0x4f8131.trim().includes(" ")) {
-      return await _0x1cec94.reply("*_Please provide the artist and song title separated by a space: Artist SongTitle_*");
+    pattern: "lyrics",
+    desc: "Get the lyrics of a song by artist and title.",
+    react: "🎵",
+    category: "utility",
+    use: ".lyrics <artist> <song title>",
+    filename: __filename,
+}, async (conn, mek, m, { args, reply }) => {
+    try {
+        if (args.length < 2) {
+            return reply("❌ Please provide the artist and song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
+        }
+
+        // Parse the user input
+        const artist = args[0]; // First word is the artist's name
+        const title = args.slice(1).join(" "); // The rest is the song title
+
+        if (!artist || !title) {
+            return reply("❌ Please specify both the artist and the song title.\nExample: `.lyrics Ed Sheeran Shape of You`");
+        }
+
+        // Notify the user that the lyrics are being fetched
+        reply(`🎵 Searching for lyrics of "${title}" BY ${artist}...`);
+
+        // Fetch lyrics using an API
+        const response = await axios.get(`https://api.lyrics.ovh/v1/${artist}/${title}`);
+        const lyrics = response.data.lyrics;
+
+        if (!lyrics) {
+            return reply(`❌ Sorry, no lyrics found for "${title}" by ${artist}.`);
+        }
+
+        // Send the lyrics back to the chat
+        reply(`> 🧞‍♂️KERM RESULT🧞‍♂️\n\n🎶 *${title}* BY *${artist}*\n\n${lyrics}`);
+    } catch (error) {
+        console.error("Error fetching lyrics:", error.message);
+
+        if (error.response && error.response.status === 404) {
+            reply("❌ Sorry, no lyrics found for the specified artist and song title.");
+        } else {
+            reply("❌ An error occurred while fetching the lyrics. Please try again later.");
+        }
     }
-
-    const args = _0x4f8131.trim().split(" ");
-    const artist = args[0];
-    const song = args.slice(1).join(" ");
-
-    if (!artist || !song) {
-      return await _0x1cec94.reply("*_Invalid format! Use: Artist SongTitle_*");
-    }
-
-    const searchUrl = `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(song)}`;
-
-    const response = await axios.get(searchUrl);
-    const lyrics = response.data?.lyrics;
-
-    if (!lyrics) {
-      return await _0x1cec94.reply(`*_No lyrics found for the song "${song}" by "${artist}"_*`);
-    }
-
-    const result = `*🎶 Lyrics for "${song}" by "${artist}" 🎵*\n\n${lyrics.substring(0, 4000)}\n\n`;
-
-    await _0x1cec94.reply(result);
-  } catch (error) {
-    console.error(error);
-    await _0x1cec94.reply("*_An error occurred while fetching the lyrics. Try again later!_*");
-  }
 });
