@@ -116,9 +116,6 @@ cmd({
         reply("❌ An error occurred while starting the timer. Please try again.");
     }
 });
-const axios = require('axios');
-const { cmd } = require('../command');
-
 cmd({
     pattern: "lyrics",
     alias: ["lyric"],
