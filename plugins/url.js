@@ -16,32 +16,24 @@ const os = require('os');
 const path = require('path');
 const { cmd } = require('../command');
 
-// Command: .url
+// Command: .maid
 cmd({
-    pattern: "url",
-    alias: ["imgtourl", "img2url", "tourl", "upload"],
+    pattern: "maid",
+    alias: ["imgtourl", "img2url", "tourl"],
     react: "🖇",
-    desc: "Download anime url images.",
+    desc: "Download anime maid images.",
     category: "anime",
-    use: ".url",
+    use: ".maid",
     filename: __filename,
 }, async (conn, mek, m, options) => {
-    const { reply, quoted } = options;
+    const { reply } = options;
 
     try {
-        // Log to debug
-        console.log("Quoted message:", m.quoted);
-
-        // Check if a quoted message contains an image
+        // Check if the current message or the quoted message contains an image
         let targetMessage = m.quoted ? m.quoted : m;
         let mimeType = targetMessage.mimetype || '';
-        
-        // Log MIME type for debugging
-        console.log("MIME type:", mimeType);
-
-        if (!mimeType || !mimeType.startsWith('image/')) {
-            throw "Please reply to an image.";
-        }
+        console.log("MIME Type: ", mimeType);  // Log the MIME type for debugging
+        if (!mimeType || !mimeType.startsWith('image/')) throw "Please reply to an image.";
 
         // Download the image
         let imageData = await targetMessage.download();
@@ -70,10 +62,10 @@ cmd({
         fs.unlinkSync(tempPath);
 
         // Prepare the caption with size and URL
-        const caption = `*KERM_MD-V4 IMG URL📸*\n\n` +
+        const caption = `*SILENT-SOBX-MD IMG URL📸*\n\n` +
                         `> *Size:* ${imageData.length} Byte(s)\n` +
                         `> *URL:* ${imageUrl}\n\n` +
-                        `> *⚖️ UPLOAD - : © BY KG TECH*`;
+                        `> *⚖️ UPLOAD - : © BY SILENTLOVER432*`;
 
         // Send the result
         m.reply(caption);
