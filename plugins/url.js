@@ -6,6 +6,9 @@ contact dev2 237650564445 ♻️
 
 
 
+
+
+
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
@@ -26,10 +29,19 @@ cmd({
     const { reply, quoted } = options;
 
     try {
+        // Log to debug
+        console.log("Quoted message:", m.quoted);
+
         // Check if a quoted message contains an image
         let targetMessage = m.quoted ? m.quoted : m;
         let mimeType = targetMessage.mimetype || '';
-        if (!mimeType) throw "Please reply to an image.";
+        
+        // Log MIME type for debugging
+        console.log("MIME type:", mimeType);
+
+        if (!mimeType || !mimeType.startsWith('image/')) {
+            throw "Please reply to an image.";
+        }
 
         // Download the image
         let imageData = await targetMessage.download();
