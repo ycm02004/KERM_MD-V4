@@ -33,8 +33,10 @@ cmd({
         let targetMessage = m.quoted ? m.quoted : m;
         let mimeType = targetMessage.mimetype || '';
         
-        // Log to debug the MIME type
+        // Log to debug the MIME type and message object
+        console.log("Received message:", m);
         console.log("MIME Type: ", mimeType);
+        console.log("Quoted message: ", m.quoted ? "Yes" : "No");
 
         if (!mimeType || !mimeType.startsWith('image/')) {
             console.log("No image detected or mime type is invalid.");
