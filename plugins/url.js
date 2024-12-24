@@ -29,11 +29,17 @@ cmd({
     const { reply } = options;
 
     try {
-        // Check if the current message or the quoted message contains an image
+        // Check if the message contains a quoted image or the current message itself contains an image
         let targetMessage = m.quoted ? m.quoted : m;
         let mimeType = targetMessage.mimetype || '';
-        console.log("MIME Type: ", mimeType);  // Log the MIME type for debugging
-        if (!mimeType || !mimeType.startsWith('image/')) throw "Please reply to an image.";
+        
+        // Log to debug the MIME type
+        console.log("MIME Type: ", mimeType);
+
+        if (!mimeType || !mimeType.startsWith('image/')) {
+            console.log("No image detected or mime type is invalid.");
+            return reply("Please reply to an image.");
+        }
 
         // Download the image
         let imageData = await targetMessage.download();
@@ -44,6 +50,9 @@ cmd({
         let formData = new FormData();
         formData.append("image", fs.createReadStream(tempPath));
 
+        // Log to check the size of the image before upload
+        console.log("Image size: ", imageData.length, "bytes");
+
         // Upload the image to the imgbb API
         let response = await axios.post(
             'https://api.imgbb.com/1/upload?key=06d00f0e4520243a32b58138765a2ecc',
@@ -51,7 +60,9 @@ cmd({
             { headers: { ...formData.getHeaders() } }
         );
 
+        // Check if the image upload was successful
         if (!response.data || !response.data.data || !response.data.data.url) {
+            console.log("Error during image upload: ", response.data);
             throw "Error while uploading the image.";
         }
 
@@ -71,7 +82,8 @@ cmd({
         m.reply(caption);
 
     } catch (error) {
+        // Log and return the error message
+        console.error("Error occurred: ", error);
         reply(`${error}`);
-        console.error(error);
     }
 });
