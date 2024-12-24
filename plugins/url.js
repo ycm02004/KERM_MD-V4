@@ -18,9 +18,9 @@ cmd({
     pattern: "url",
     alias: ["imgtourl", "img2url", "tourl", "upload"],
     react: "🖇",
-    desc: "Download anime maid images.",
+    desc: "Download anime url images.",
     category: "anime",
-    use: ".maid",
+    use: ".url",
     filename: __filename,
 }, async (conn, mek, m, options) => {
     const { reply, quoted } = options;
