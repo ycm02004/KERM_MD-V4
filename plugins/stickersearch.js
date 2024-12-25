@@ -20,47 +20,55 @@
 
 
 
-const axios = require("axios");
+
+
+
+const axios = require('axios');
 const { cmd } = require("../command");
 
+// Command: stickersearch
 cmd({
     pattern: "stickersearch",
-    alias: ["stsearch", "sticksearch"],
-    desc: "Search and fetch stickers based on a keyword.",
+    alias: ["gifsearch"],
+    react: "⏳",
+    desc: "Search and send stickers (GIFs) from Tenor API.",
     category: "fun",
-    react: "🔍",
     filename: __filename
-}, async (conn, mek, m, { args, reply }) => {
+}, async (conn, mek, m, { reply, text, from }) => {
+    if (!text) return reply('Please provide a search term for the sticker search.\nExample: .stickersearch funny cat');
+
     try {
-        // Vérifiez si un mot-clé est fourni
-        if (args.length === 0) {
-            return reply(`❗ *Please provide a search term.*\n\nExample:\n.stickersearch funny`);
-        }
+        const tenorApiKey = 'AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c'; // Replace with your actual Tenor API key
+        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(text)}&key=${tenorApiKey}&client_key=my_project&limit=8&media_filter=gif`;
 
-        const query = args.join(" ");
-        const tenorApiKey = "AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c"; // Remplacez par votre clé API
-        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${tenorApiKey}&client_key=my_project&limit=8&media_filter=gif`;
-
-        // Appel API
+        // Fetch stickers from Tenor API
         const response = await axios.get(apiUrl);
+        const results = response.data.results;
 
-        // Vérifiez si l'API a renvoyé des résultats
-        if (response.status !== 200 || !response.data.results || response.data.results.length === 0) {
-            return reply(`❌ *No stickers found for:* ${query}`);
+        if (!results.length) {
+            return reply('No stickers found for your search query.');
         }
 
-        // Envoyez les résultats sous forme de stickers
-        for (const result of response.data.results) {
-            const mediaUrl = result.media_formats.gif.url;
+        // Select the first sticker from the results
+        const sticker = results[0];
+        const stickerUrl = sticker.media[0].gif.url;
 
-            await conn.sendMessage(m.chat, {
-                sticker: { url: mediaUrl },
-                caption: `🎨 *Sticker found for:* "${query}"`
-            }, { quoted: mek });
+        // Fetch the sticker to check the size before sending
+        const stickerResponse = await axios.get(stickerUrl, { responseType: 'arraybuffer' });
+
+        // Check if the sticker size is less than 2MB (2 * 1024 * 1024 bytes)
+        if (stickerResponse.data.length > 2 * 1024 * 1024) {
+            return reply('The sticker is too large to send. Please try a different search.');
         }
+
+        // Send the sticker with the caption
+        await conn.sendMessage(from, { 
+            sticker: { url: stickerUrl }, 
+            caption: `Here is your sticker for: *${text}* 🖼️`
+        }, { quoted: mek });
 
     } catch (error) {
         console.error(error);
-        reply(`⚠️ *An error occurred while fetching stickers.*\n\n${error.message}`);
+        reply('An error occurred while fetching the sticker. Please try again later.');
     }
 });
