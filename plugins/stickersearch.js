@@ -17,11 +17,18 @@
 
 
 
+
+
+
+
+
+
+
 const axios = require('axios');
-const { cmd } = require("../command");  // Ajout du require pour "command"
+const { cmd } = require("../command");  // Assurez-vous d'importer correctement "command"
 const fs = require('fs');
 
-// Command: stickersearch
+// Commande: stickersearch
 cmd({
     pattern: "stickersearch",
     alias: ["searchsticker", "stickersearcher"],
@@ -31,14 +38,14 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { text, reply }) => {
     try {
-        // Vérifier si un terme de recherche est fourni
+        // Vérifier si un mot-clé est fourni après la commande
         if (!text) {
             return reply("Please provide a search term for the sticker search.\nExample: .stickersearch funny cat");
         }
 
         // Construire l'URL de l'API Tenor pour rechercher des stickers
         const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(text)}&key=AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c&client_key=my_project&limit=8&media_filter=gif`;
-        
+
         // Requête API pour obtenir des stickers
         const response = await axios.get(apiUrl);
         const stickers = response.data.results;
