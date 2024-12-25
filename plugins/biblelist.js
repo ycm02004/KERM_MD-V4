@@ -106,15 +106,13 @@ cmd({
         await conn.sendMessage(
             m.chat,
             {
-                image: {
-                    url: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Bible_life.jpg", // URL d'une image de la Bible
-                },
+                image: { url: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Bible_life.jpg" }, // URL d'une image
                 caption: bibleBooks,
             },
-            { quoted: m }
+            { quoted: mek } // Assurez-vous que l'objet `mek` est bien passé
         );
     } catch (error) {
-        console.error("Biblelist Command Error:", error.message);
+        console.error("Biblelist Command Error:", error); // Log de l'erreur complète pour le débogage
         reply("An error occurred while fetching the Bible list. Please try again.");
     }
 });
