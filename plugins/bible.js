@@ -21,56 +21,48 @@
 
 
 
-const axios = require("axios"); // Importer axios pour les requêtes HTTP
-const { cmd } = require("../command"); // Gestionnaire de commandes
 
+
+const axios = require("axios");
+const { cmd } = require("../command");
+
+// Command: bible
 cmd({
-    pattern: "bible", // Commande principale
-    alias: ["verse", "scripture"], // Alias de la commande
-    desc: "Get a Bible verse or passage using a reference.", // Description de la commande
-    category: "religion", // Catégorie
-    react: "📖", // Emoji de réaction
-    filename: __filename, // Nom du fichier
-}, async (conn, mek, m, { text, reply }) => {
+    pattern: "bible",
+    desc: "Fetch Bible verses by reference.",
+    category: "fun",
+    react: "📖",
+    filename: __filename
+}, async (conn, mek, m, { args, reply }) => {
     try {
-        // Vérifiez si une référence biblique est fournie
-        if (!text) {
-            return reply(
-                `Please provide a Bible reference.\n\n*Example:*\n.bible John 3:16`
-            );
+        // Vérifiez si une référence est fournie
+        if (args.length === 0) {
+            return reply(`⚠️ *Please provide a Bible reference.*\n\n📝 *Example:*\n.bible John 3:16`);
         }
 
-        // URL de l'API avec la référence
-        const apiUrl = `https://bible-api.com/${encodeURIComponent(text.trim())}`;
+        // Joindre les arguments pour former la référence
+        const reference = args.join(" ");
 
-        // Requête à l'API
+        // Appeler l'API avec la référence
+        const apiUrl = `https://bible-api.com/${encodeURIComponent(reference)}`;
         const response = await axios.get(apiUrl);
 
-        // Vérifiez si la réponse contient les données nécessaires
-        if (!response.data || !response.data.text) {
-            return reply(
-                `Could not fetch the Bible verse. Please check the reference or try again later.`
+        // Vérifiez si la réponse contient des données
+        if (response.status === 200 && response.data.text) {
+            const { reference: ref, text, translation_name } = response.data;
+
+            // Envoyez la réponse formatée avec des emojis
+            reply(
+                `📜 *Bible Verse Found!*\n\n` +
+                `📖 *Reference:* ${ref}\n` +
+                `📚 *Text:* ${text}\n\n` +
+                `🗂️ *Translation:* ${translation_name}`
             );
+        } else {
+            reply("❌ *Verse not found.* Please check the reference and try again.");
         }
-
-        // Extraire les informations
-        const { reference, text: verse, translation_name } = response.data;
-
-        // Préparer le message à envoyer
-        const message = `
-*📖 Bible Verse:*
-
-> *📜 Reference:* ${reference}
-> *📝 Verse:* ${verse}
-> *📘 Translation:* ${translation_name || "Unknown"}
-
-> *🙏 BY KERM MD V4❤️*
-        `;
-
-        // Envoyer la réponse au chat
-        reply(message);
     } catch (error) {
-        console.error("Bible Command Error:", error.message);
-        reply("An error occurred while fetching the Bible verse. Please try again later.");
+        console.error(error);
+        reply("⚠️ *An error occurred while fetching the Bible verse.* Please try again.");
     }
 });
