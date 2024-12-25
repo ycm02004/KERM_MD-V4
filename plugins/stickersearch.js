@@ -17,15 +17,9 @@
 
 
 
-
-
-
-
-
-
-
 const axios = require('axios');
 const { cmd } = require("../command");  // Ajout du require pour "command"
+const fs = require('fs');
 
 // Command: stickersearch
 cmd({
@@ -57,8 +51,24 @@ cmd({
         // Sélectionner le premier sticker
         const stickerUrl = stickers[0].media[0].gif.url;
 
-        // Envoyer le sticker trouvé
-        await conn.sendMessage(m.chat, { sticker: { url: stickerUrl } }, { quoted: mek });
+        // Télécharger le sticker pour vérifier la taille
+        const stickerResponse = await axios.get(stickerUrl, { responseType: 'arraybuffer' });
+
+        // Vérifier la taille du sticker (en Ko)
+        const stickerSize = Buffer.byteLength(stickerResponse.data) / 1024; // Taille en Ko
+        if (stickerSize > 1024) {  // Limite de 1 Mo (1024 Ko)
+            return reply("The sticker is too large to send. Please try a different search.");
+        }
+
+        // Sauvegarder le sticker temporairement avant l'envoi
+        const tempPath = './tempSticker.gif';
+        fs.writeFileSync(tempPath, stickerResponse.data);
+
+        // Envoyer le sticker si la taille est correcte
+        await conn.sendMessage(m.chat, { sticker: { url: tempPath } }, { quoted: mek });
+
+        // Supprimer le fichier temporaire après l'envoi
+        fs.unlinkSync(tempPath);
 
     } catch (error) {
         console.error(error);
