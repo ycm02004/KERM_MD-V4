@@ -22,59 +22,45 @@
 
 
 
-
-
-
-
-
-const axios = require("axios"); // Importer axios pour les requêtes HTTP
-const { cmd } = require("../command"); // Gestionnaire de commandes
+const axios = require("axios");
+const { cmd } = require("../command");
 
 cmd({
-    pattern: "google", // Commande principale
-    alias: ["search", "websearch"], // Alias de la commande
-    desc: "Search the web using Google.", // Description de la commande
-    category: "tools", // Catégorie
-    react: "🌐", // Emoji de réaction
-    filename: __filename, // Nom du fichier
-}, async (conn, mek, m, { text, reply }) => {
+    pattern: "google",
+    alias: ["gsearch", "search"],
+    desc: "Search Google for a query.",
+    category: "tools",
+    react: "🌐",
+    filename: __filename
+}, async (conn, mek, m, { args, reply }) => {
     try {
-        // Vérifiez si une requête de recherche est fournie
-        if (!text) {
-            return reply(
-                `Please provide a search query.\n\n*Example:*\n.google OpenAI`
-            );
+        // Vérifiez si un mot-clé est fourni
+        if (args.length === 0) {
+            return reply(`❗ *Please provide a search query.*\n\n*Example:*\n.google OpenAI`);
         }
 
-        // URL de l'API avec la requête utilisateur
-        const apiUrl = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(
-            text.trim()
-        )}&key=AIzaSyDMbI3nvmQUrfjoCJYLS69Lej1hSXQjnWI&cx=baf9bdb0c631236e5`;
+        const query = args.join(" ");
+        const apiKey = "AIzaSyDMbI3nvmQUrfjoCJYLS69Lej1hSXQjnWI"; // Votre clé API Google
+        const cx = "baf9bdb0c631236e5"; // Votre ID de moteur de recherche personnalisé
+        const apiUrl = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cx}`;
 
-        // Requête à l'API
+        // Appel API
         const response = await axios.get(apiUrl);
 
-        // Vérifiez si des résultats sont retournés
-        const items = response.data.items || [];
-        if (items.length === 0) {
-            return reply("No results found for your query.");
+        // Vérifiez si l'API a renvoyé des résultats
+        if (response.status !== 200 || !response.data.items || response.data.items.length === 0) {
+            return reply(`❌ *No results found for:* ${query}`);
         }
 
-        // Construire la réponse avec les résultats
-        let message = `*🌐 Google Search Results:*\n\n`;
-
-        items.slice(0, 5).forEach((item, index) => {
-            message += `*${index + 1}. ${item.title}*\n`;
-            message += `${item.snippet}\n`;
-            message += `🔗 ${item.link}\n\n`;
+        // Format et envoi des résultats
+        let results = `🔎 *Google Search Results for:* "${query}"\n\n`;
+        response.data.items.slice(0, 5).forEach((item, index) => {
+            results += `*${index + 1}. ${item.title}*\n${item.link}\n${item.snippet}\n\n`;
         });
 
-        // Envoyer la réponse
-        reply(message.trim());
+        reply(results.trim());
     } catch (error) {
-        console.error("Google Command Error:", error.message);
-        reply(
-            "An error occurred while searching the web. Please try again later."
-        );
+        console.error(error);
+        reply(`⚠️ *An error occurred while fetching search results.*\n\n${error.message}`);
     }
 });
