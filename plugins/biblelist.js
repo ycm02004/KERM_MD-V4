@@ -16,20 +16,26 @@
 
 
 
+
+
+
+
+
 const { cmd } = require("../command");
 
+// Command: biblelist
 cmd({
-    pattern: "biblelist", // Commande principale
-    alias: ["blist", "bible-books"], // Alias de la commande
-    desc: "List all books in the Bible.", // Description de la commande
-    category: "bible", // Catégorie
-    react: "📖", // Emoji de réaction
-    filename: __filename, // Nom du fichier
+    pattern: "biblelist",
+    alias: ["biblebooks", "listbible", "blist"], // Ajout des alias
+    desc: "Get the complete list of books in the Bible.",
+    category: "fun",
+    react: "📜",
+    filename: __filename
 }, async (conn, mek, m, { reply }) => {
     try {
-        // Liste des livres
-        const bibleBooks = `
-*📜 Old Testament:*
+        // Liste des livres de la Bible
+        const bibleList = `
+📜 *Old Testament*:
 1. Genesis
 2. Exodus
 3. Leviticus
@@ -70,7 +76,7 @@ cmd({
 38. Zechariah
 39. Malachi
 
-*📖 New Testament:*
+📖 *New Testament*:
 1. Matthew
 2. Mark
 3. Luke
@@ -99,20 +105,27 @@ cmd({
 26. Jude
 27. Revelation
 
-*🌟 Regards: Kerm Md V4*
+
+❤️BY KERM MD V4❤️
 `;
 
-        // Envoi de la liste avec une image
-        await conn.sendMessage(
-            m.chat,
-            {
-                image: { url: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Bible_life.jpg" }, // URL d'une image
-                caption: bibleBooks,
-            },
-            { quoted: mek } // Assurez-vous que l'objet `mek` est bien passé
-        );
+        // Remplacer ce lien par l'URL de l'image que tu m'enverras
+        const imageUrl = "https://files.catbox.moe/kx30st.jpeg"; // Remplace "TON_LIEN_IMAGE_ICI" par ton lien d'image
+
+        // Vérifier si le message de la commande est correctement reçu
+        if (!m.chat) {
+            return reply("❌ *An error occurred: Invalid chat.*");
+        }
+
+        // Envoi de la réponse avec l'image et la liste des livres de la Bible
+        await conn.sendMessage(m.chat, {
+            image: { url: imageUrl },
+            caption: `📖 *Bible List*:\n\n` +
+                     `Here is the complete list of books in the Bible:\n\n` +
+                     bibleList.trim() // Ajout du texte des livres de la Bible
+        }, { quoted: mek });
     } catch (error) {
-        console.error("Biblelist Command Error:", error); // Log de l'erreur complète pour le débogage
-        reply("An error occurred while fetching the Bible list. Please try again.");
+        console.error(error);
+        reply("❌ *An error occurred while fetching the Bible list. Please try again.*");
     }
 });
