@@ -72,7 +72,7 @@ cmd({
 > *✅ Verified:* ${is_verified ? "Yes" : "No"}
 > *🔒 Private Account:* ${is_private ? "Yes" : "No"}
 
-> *© BY YOUR_BOT_NAME*
+> *© BY KERM MD V4❤️*
         `;
 
         // Envoyer la photo de profil et les détails
