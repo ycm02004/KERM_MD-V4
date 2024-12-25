@@ -15,7 +15,7 @@ const {runtime} = require('../lib/functions')
 cmd({
     pattern: "system",
     react: "♠️",
-    alias: ["uptime","status","runtime"],
+    alias: ["uptime" ,"runtime"],
     desc: "cheack uptime",
     category: "main",
     filename: __filename
