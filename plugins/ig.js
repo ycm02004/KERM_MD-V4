@@ -37,7 +37,7 @@ cmd({
     try {
         // Vérifiez si un nom d'utilisateur est fourni
         if (args.length === 0) {
-            return reply(`❗ *Please provide an Instagram username.*\n\n*Example:*\n.ig silentlover432`);
+            return reply(`❗ *Please provide an Instagram username.*\n\n*Example:*\n.ig rnbvb_e`);
         }
 
         const username = args[0]; // Récupérer le nom d'utilisateur
