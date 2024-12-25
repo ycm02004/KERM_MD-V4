@@ -50,7 +50,7 @@ cmd({
 
         // Vérifier si la réponse contient des résultats
         if (response.data.country && response.data.country.length > 0) {
-            let message = `🌍 *Nationality Prediction for* _${text}_\n\n`;
+            let message = `🏮KERM_MD-V4 FIND NAME🏮\n\n🌍 *Nationality Prediction for* _${text}_\n\n`;
 
             // Format de la réponse pour chaque pays et probabilité
             response.data.country.forEach(country => {
