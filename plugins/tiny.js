@@ -20,43 +20,46 @@
 
 
 
-const axios = require("axios"); // Importer Axios pour les requêtes HTTP
-const { cmd } = require("../command"); // Importer la gestion des commandes
 
-// Commande Tiny
+const axios = require("axios");
+const { cmd } = require("../command");
+
 cmd({
-    pattern: "tiny", // Mot-clé de la commande
-    desc: "Shorten a URL using TinyURL.", // Description de la commande
-    category: "tools", // Catégorie de la commande
-    react: "🔗", // Emoji de réaction pour la commande
-    filename: __filename // Nom du fichier pour référence
-}, async (conn, mek, m, { text, reply }) => {
+    pattern: "tiny",
+    alias: ["shorten", "shorturl"],
+    desc: "Shorten a URL using TinyURL.",
+    category: "tools",
+    react: "🔗",
+    filename: __filename
+}, async (conn, mek, m, { args, reply }) => {
     try {
-        // Vérifier si l'utilisateur a fourni une URL
-        if (!text) {
-            return reply(
-                `Hello,\nKerm Tiny URL Shortener Here.\nPlease provide a URL to shorten.\n*Usage:*\n.tiny https://example.com`
-            );
+        // Vérifiez si l'utilisateur a fourni une URL
+        if (args.length === 0) {
+            return reply(`❌ *Please provide a URL to shorten.*\n\n*Example:*\n.tiny https://example.com`);
         }
 
-        const urlToShorten = text.trim(); // Supprimer les espaces inutiles
+        const urlToShorten = args[0].trim(); // URL à raccourcir
 
-        // Vérifier si l'URL fournie est valide
-        if (!urlToShorten.startsWith("http://") && !urlToShorten.startsWith("https://")) {
-            return reply("Please provide a valid URL starting with http:// or https://.");
+        // Vérifiez si l'URL est valide
+        if (!/^https?:\/\/[^\s/$.?#].[^\s]*$/.test(urlToShorten)) {
+            return reply(`❌ *Invalid URL format. Please provide a valid URL.*`);
         }
 
-        // Construire l'URL de l'API TinyURL
+        // URL de l'API TinyURL
         const apiUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlToShorten)}`;
 
-        // Envoyer une requête pour raccourcir l'URL
+        // Appel à l'API TinyURL
         const response = await axios.get(apiUrl);
 
-        // Renvoyer l'URL raccourcie
-        reply(`🔗 Here is your shortened URL: ${response.data}`);
+        // Vérifiez si l'API a renvoyé un résultat valide
+        if (!response.data || response.data.includes("Error")) {
+            throw new Error("API response invalid or failed.");
+        }
+
+        // Envoyer l'URL raccourcie
+        reply(`✅ *URL Shortened Successfully!*\n\n🔗 *Short URL:* ${response.data}`);
     } catch (error) {
-        // Gérer les erreurs et notifier l'utilisateur
-        console.error("Error shortening URL:", error.message);
-        reply("Error shortening URL. Please check the URL format or try again later.");
+        console.error("Error in Tiny Command:", error.message);
+        reply(`❌ *An error occurred while shortening the URL. Please try again later.*`);
     }
 });
