@@ -23,52 +23,64 @@
 
 
 
+
 const axios = require('axios');
 const { cmd } = require("../command");
 
-// Command: stickersearch
 cmd({
     pattern: "stickersearch",
-    alias: ["gifsearch"],
-    react: "⏳",
-    desc: "Search and send stickers (GIFs) from Tenor API.",
+    alias: ["searchsticker"],
+    desc: "Search for stickers.",
     category: "fun",
+    react: "🖼️",
     filename: __filename
-}, async (conn, mek, m, { reply, text, from }) => {
-    if (!text) return reply('Please provide a search term for the sticker search.\nExample: .stickersearch funny cat');
-
+}, async (conn, mek, m, { reply, text }) => {
     try {
-        const tenorApiKey = 'AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c'; // Replace with your actual Tenor API key
-        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(text)}&key=${tenorApiKey}&client_key=my_project&limit=8&media_filter=gif`;
+        // Vérification que l'utilisateur a bien fourni un terme de recherche
+        if (!text) {
+            return reply("Please provide a search term for the sticker search.\nExample: .stickersearch funny cat");
+        }
 
-        // Fetch stickers from Tenor API
+        // Utilisation de l'API Tenor pour rechercher un sticker
+        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(text)}&key=AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c&client_key=my_project&limit=8&media_filter=gif`;
+        
+        // Envoi de la requête à l'API Tenor
         const response = await axios.get(apiUrl);
-        const results = response.data.results;
-
-        if (!results.length) {
-            return reply('No stickers found for your search query.');
+        
+        // Vérification qu'il y a des résultats
+        if (!response.data.results || response.data.results.length === 0) {
+            return reply("No stickers found for your search query.");
         }
 
-        // Select the first sticker from the results
-        const sticker = results[0];
-        const stickerUrl = sticker.media[0].gif.url;
+        // Trouver un sticker qui respecte la taille maximale (par exemple, 1 Mo)
+        const maxSize = 1 * 1024 * 1024; // 1 Mo en octets
+        let validStickerUrl = null;
 
-        // Fetch the sticker to check the size before sending
-        const stickerResponse = await axios.get(stickerUrl, { responseType: 'arraybuffer' });
+        for (let result of response.data.results) {
+            const stickerUrl = result.media[0].gif.url;
 
-        // Check if the sticker size is less than 2MB (2 * 1024 * 1024 bytes)
-        if (stickerResponse.data.length > 2 * 1024 * 1024) {
-            return reply('The sticker is too large to send. Please try a different search.');
+            // Téléchargez le sticker pour obtenir sa taille
+            const stickerResponse = await axios.get(stickerUrl, { responseType: 'arraybuffer' });
+            const stickerSize = stickerResponse.data.length;
+
+            // Si la taille du sticker est inférieure ou égale à la taille maximale, on le garde
+            if (stickerSize <= maxSize) {
+                validStickerUrl = stickerUrl;
+                break;
+            }
         }
 
-        // Send the sticker with the caption
-        await conn.sendMessage(from, { 
-            sticker: { url: stickerUrl }, 
-            caption: `Here is your sticker for: *${text}* 🖼️`
-        }, { quoted: mek });
+        // Si un sticker valide est trouvé, l'envoyer
+        if (validStickerUrl) {
+            await conn.sendMessage(m.chat, {
+                sticker: { url: validStickerUrl },
+            }, { quoted: mek });
+        } else {
+            reply("No stickers found that fit within the size limit.");
+        }
 
     } catch (error) {
         console.error(error);
-        reply('An error occurred while fetching the sticker. Please try again later.');
+        reply("An error occurred while searching for the sticker. Please try again later.");
     }
 });
