@@ -53,6 +53,7 @@ const acr = new acrcloud({
 cmd({
     pattern: "shazam",
     alias: ["find", "identify"],
+    react: "🔎",
     desc: "Identify a song by its audio.",
     category: "music",
     react: "🎶",
