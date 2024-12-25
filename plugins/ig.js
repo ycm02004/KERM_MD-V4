@@ -17,72 +17,61 @@
 
 
 
-const axios = require("axios"); // Importation d'axios pour les requêtes HTTP
-const { cmd } = require("../command"); // Gestionnaire de commandes
+
+
+
+
+
+
+const axios = require("axios");
+const { cmd } = require("../command");
 
 cmd({
-    pattern: "ig", // Commande pour Instagram
-    alias: ["igstalk", "instainfo"], // Alias de la commande
-    react: "⏳",
-    desc: "Fetch Instagram profile details using username.", // Description
-    category: "social", // Catégorie
-    react: "📷", // Emoji de réaction
-    filename: __filename, // Nom du fichier
-}, async (conn, mek, m, { text, reply }) => {
+    pattern: "ig",
+    alias: ["instagram", "igstalk"],
+    desc: "Fetch Instagram profile details.",
+    category: "tools",
+    react: "📸",
+    filename: __filename
+}, async (conn, mek, m, { args, reply }) => {
     try {
         // Vérifiez si un nom d'utilisateur est fourni
-        if (!text) {
-            return reply("Please provide an Instagram username to stalk.\nExample: .ig username");
+        if (args.length === 0) {
+            return reply(`❗ *Please provide an Instagram username.*\n\n*Example:*\n.ig silentlover432`);
         }
 
-        // URL de l'API avec le nom d'utilisateur
-        const apiUrl = `https://www.guruapi.tech/api/igstalk?username=${encodeURIComponent(text.trim())}`;
-
-        // Envoi de la requête à l'API
+        const username = args[0]; // Récupérer le nom d'utilisateur
+        const apiUrl = `https://www.guruapi.tech/api/igstalk?username=${username}`;
+        
+        // Appel API
         const response = await axios.get(apiUrl);
+        const data = response.data;
 
-        // Vérifiez si la réponse contient les données nécessaires
-        if (!response.data || !response.data.result) {
-            return reply("Error fetching profile details. Please check the username or try again later.");
+        // Vérifiez si les données sont valides
+        if (!data || data.status !== "success") {
+            return reply(`❌ *No details found for username:* ${username}`);
         }
 
-        // Extraire les informations de l'utilisateur
-        const {
-            username,
-            full_name,
-            bio,
-            followers,
-            following,
-            posts,
-            profile_pic_url_hd,
-            is_private,
-            is_verified,
-        } = response.data.result;
+        // Format et affichage des résultats
+        const profile = data.data;
+        const result = `📸 *Instagram Profile Details:*\n\n` +
+                       `👤 *Username:* ${profile.username}\n` +
+                       `📛 *Full Name:* ${profile.full_name || "N/A"}\n` +
+                       `📝 *Bio:* ${profile.biography || "N/A"}\n` +
+                       `🌐 *Followers:* ${profile.followers_count}\n` +
+                       `🧑‍🤝‍🧑 *Following:* ${profile.following_count}\n` +
+                       `📸 *Posts:* ${profile.posts_count}\n` +
+                       `🔗 *Profile Link:* [Visit Profile](https://instagram.com/${profile.username})\n\n` +
+                       `💡 *Private Account:* ${profile.is_private ? "Yes 🔒" : "No 🔓"}\n` +
+                       `👑 *Verified Account:* ${profile.is_verified ? "Yes ✅" : "No ❌"}`;
 
-        // Préparer le message à envoyer avec des emojis
-        const profileInfo = `
-*📸 Instagram Profile Stalker*
-
-> *👤 Username:* ${username}
-> *🧑‍🤝‍🧑 Full Name:* ${full_name || "N/A"}
-> *📝 Bio:* ${bio || "N/A"}
-> *👥 Followers:* ${followers || "N/A"}
-> *📊 Following:* ${following || "N/A"}
-> *🖼️ Posts:* ${posts || "N/A"}
-> *✅ Verified:* ${is_verified ? "Yes" : "No"}
-> *🔒 Private Account:* ${is_private ? "Yes" : "No"}
-
-> *© BY KERM MD V4❤️*
-        `;
-
-        // Envoyer la photo de profil et les détails
+        // Envoi du message avec l'image de profil
         await conn.sendMessage(m.chat, {
-            image: { url: profile_pic_url_hd },
-            caption: profileInfo,
+            image: { url: profile.profile_pic_url_hd },
+            caption: result
         }, { quoted: mek });
-
     } catch (error) {
-        console.error("Instagram Stalker Error:", error.message);
-        reply("An error occurred while fetching Instagram details. Please try again later.");
+        console.error(error);
+        reply(`⚠️ *An error occurred while fetching Instagram profile details.*\n\n${error.message}`);
     }
 });
