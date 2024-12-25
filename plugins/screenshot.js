@@ -17,41 +17,51 @@
 
 
 
-const axios = require("axios"); // Importation d'axios pour les requêtes HTTP
-const { cmd } = require("../command"); // Importation du gestionnaire de commandes
+
+
+
+
+
+
+const axios = require("axios");
+const { cmd } = require("../command");
 
 cmd({
-    pattern: "ss", // Commande pour capturer l'écran
-    alias: ["screenshot", "webcapture"], // Alias de la commande
-    desc: "Capture the screenshot of a given URL.", // Description
-    category: "tools", // Catégorie de la commande
-    react: "📸", // Emoji de réaction
-    filename: __filename, // Nom du fichier
-}, async (conn, mek, m, { text, reply }) => {
+    pattern: "ss",
+    alias: ["screenshot", "webcapture"],
+    desc: "Take a screenshot of a website.",
+    category: "tools",
+    react: "📸",
+    filename: __filename
+}, async (conn, mek, m, { args, reply }) => {
     try {
-        // Vérifiez si un lien a été fourni
-        if (!text) {
-            return reply("Please provide a URL to capture.\nExample: .ss https://example.com");
+        // Vérifiez si un lien est fourni
+        if (args.length === 0) {
+            return reply(`❗ *Please provide a URL to capture.*\n\n*Example:*\n.ss https://example.com`);
         }
 
-        // Construire l'URL de l'API thum.io
-        const apiUrl = `https://image.thum.io/get/fullpage/${encodeURIComponent(text.trim())}`;
+        const url = args[0]; // URL fournie par l'utilisateur
 
-        // Envoyer une requête GET pour récupérer l'image
+        // Vérifiez si l'URL est valide
+        if (!/^https?:\/\/[^\s/$.?#].[^\s]*$/.test(url)) {
+            return reply(`❌ *Invalid URL format. Please provide a valid URL.*`);
+        }
+
+        // URL de l'API de capture d'écran
+        const apiUrl = `https://shot.screenshotapi.net/screenshot?token=YOUR_API_KEY&url=${encodeURIComponent(url)}&width=1280&height=720&full_page=true&output=image`;
+
+        // Requête à l'API
         const response = await axios.get(apiUrl, { responseType: "arraybuffer" });
+        const imageBuffer = Buffer.from(response.data, "binary");
 
-        // Vérifier si la réponse est correcte
-        if (!response || !response.data) {
-            return reply("Error capturing the URL. Please try again.");
-        }
-
-        // Envoyer l'image capturée comme réponse
+        // Envoi de la capture d'écran à l'utilisateur
         await conn.sendMessage(m.chat, {
-            image: Buffer.from(response.data),
-            caption: `📸 Screenshot of the URL:\n${text}`,
+            image: imageBuffer,
+            caption: `📸 *Screenshot Captured Successfully!*\n\n🔗 *URL:* ${url}`
         }, { quoted: mek });
+
     } catch (error) {
-        console.error("Screenshot Error:", error.message);
-        reply("An error occurred while capturing the URL.");
+        console.error(error);
+        reply(`⚠️ *An error occurred while capturing the screenshot.*\n\n${error.message}`);
     }
 });
