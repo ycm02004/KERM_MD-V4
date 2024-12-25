@@ -19,50 +19,45 @@
 
 
 
-
-
-
 const axios = require("axios");
 const { cmd } = require("../command");
 
 cmd({
-    pattern: "stickersearch",
-    alias: ["stsearch", "sticksearch"],
-    desc: "Search and fetch stickers based on a keyword.",
-    category: "fun",
-    react: "🔍",
+    pattern: "google",
+    alias: ["gsearch", "search"],
+    desc: "Search Google for a query.",
+    category: "tools",
+    react: "🌐",
     filename: __filename
 }, async (conn, mek, m, { args, reply }) => {
     try {
         // Vérifiez si un mot-clé est fourni
         if (args.length === 0) {
-            return reply(`❗ *Please provide a search term.*\n\nExample:\n.stickersearch funny`);
+            return reply(`❗ *Please provide a search query.*\n\n*Example:*\n.google OpenAI`);
         }
 
         const query = args.join(" ");
-        const tenorApiKey = "AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c"; // Remplacez par votre clé API
-        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${tenorApiKey}&client_key=my_project&limit=8&media_filter=gif`;
+        const apiKey = "AIzaSyDMbI3nvmQUrfjoCJYLS69Lej1hSXQjnWI"; // Votre clé API Google
+        const cx = "baf9bdb0c631236e5"; // Votre ID de moteur de recherche personnalisé
+        const apiUrl = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cx}`;
 
         // Appel API
         const response = await axios.get(apiUrl);
 
         // Vérifiez si l'API a renvoyé des résultats
-        if (response.status !== 200 || !response.data.results || response.data.results.length === 0) {
-            return reply(`❌ *No stickers found for:* ${query}`);
+        if (response.status !== 200 || !response.data.items || response.data.items.length === 0) {
+            return reply(`❌ *No results found for:* ${query}`);
         }
 
-        // Envoyez les résultats sous forme de stickers
-        for (const result of response.data.results) {
-            const mediaUrl = result.media_formats.gif.url;
+        // Format et envoi des résultats
+        let results = `🔎 *Google Search Results for:* "${query}"\n\n`;
+        response.data.items.slice(0, 5).forEach((item, index) => {
+            results += `*${index + 1}. ${item.title}*\n${item.link}\n${item.snippet}\n\n`;
+        });
 
-            await conn.sendMessage(m.chat, {
-                sticker: { url: mediaUrl },
-                caption: `🎨 *Sticker found for:* "${query}"`
-            }, { quoted: mek });
-        }
-
+        reply(results.trim());
     } catch (error) {
         console.error(error);
-        reply(`⚠️ *An error occurred while fetching stickers.*\n\n${error.message}`);
+        reply(`⚠️ *An error occurred while fetching search results.*\n\n${error.message}`);
     }
 });
