@@ -40,21 +40,18 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { reply }) => {
     try {
-        // Requête à l'API Popcat pour récupérer une phrase de drague
-        const response = await axios.get('https://api.popcat.xyz/pickuplines');
+        // Utiliser l'API pour obtenir une ligne de séduction aléatoire
+        const apiUrl = "https://api.popcat.xyz/pickuplines";
+        const response = await axios.get(apiUrl);
+        const data = response.data;
 
-        // Vérifier si la réponse contient une phrase de drague
-        if (response.data && response.data.pickle) {
-            const pickupLine = response.data.pickle;
-
-            // Formater la réponse avec des emojis
-            const message = `💘 *Here's a random pickup line for you:* \n\n"${pickupLine}" 😏`;
-
-            // Envoyer la réponse
-            await reply(message);
-        } else {
+        // Vérifier si une ligne de séduction a été trouvée
+        if (!data || !data.pickup_line) {
             return reply("❌ *Sorry, no pickup line found at the moment.* Please try again later.");
         }
+
+        // Envoyer la ligne de séduction
+        reply(`💘 *Here is your pickup line:*\n\n"${data.pickup_line}"`);
     } catch (error) {
         console.error(error);
         reply("⚠️ *An error occurred while fetching a pickup line. Please try again later.*");
