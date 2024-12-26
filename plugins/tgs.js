@@ -23,6 +23,9 @@
 
 
 
+
+
+
 const { cmd } = require("../command");
 const axios = require("axios");
 
@@ -53,8 +56,11 @@ cmd({
         const packId = stickerLink.split("/").pop();
 
         // Appeler l'API Telegram pour obtenir les stickers
-        const url = `https://api.telegram.org/bot7994740472:AAG0B4AVVbYhFK36iIhkKinSdh5Dg5rz5s4/getStickerSet?name=${packId}`;
+        const url = `https://api.telegram.org/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/getStickerSet?name=${packId}`;
         const response = await axios.get(url);
+
+        // Log la réponse pour vérifier les erreurs
+        console.log("API Response:", response.data);
 
         if (response.data.ok && response.data.result.stickers.length > 0) {
             const stickers = response.data.result.stickers.slice(0, numberOfStickers);
@@ -68,7 +74,7 @@ cmd({
             reply("❌ *No stickers found in this pack.*");
         }
     } catch (error) {
-        console.error(error);
+        console.error("Error while fetching stickers:", error);
         reply("❌ *An error occurred while fetching the stickers.* Please try again later.");
     }
 });
