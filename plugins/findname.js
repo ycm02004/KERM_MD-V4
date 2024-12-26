@@ -33,37 +33,34 @@ const axios = require("axios");
 
 cmd({
     pattern: "fname",
-    alias: ["findname"],
-    desc: "Find the nationality of a given name.",
+    desc: "Find the nationality based on the name.",
     category: "fun",
     react: "🌍",
     filename: __filename
 }, async (conn, mek, m, { reply, text }) => {
     try {
-        // Vérifier si un prénom a été fourni
-        if (!text) {
-            return reply("❌ *Please provide a name to find the nationality.*\n*Example:* .fname Rayan");
+        // Vérifier si un nom est fourni
+        if (!text || text.trim() === "") {
+            return reply("❌ *Please provide a name to find the nationality.*\nExample: .fname Rayan");
         }
 
-        // Requête à l'API Nationalize
-        const response = await axios.get(`https://api.nationalize.io/?name=${text}`);
+        // Utiliser l'API pour obtenir la nationalité basée sur le nom
+        const apiUrl = `https://api.nationalize.io/?name=${text.trim()}`;
+        const response = await axios.get(apiUrl);
+        const data = response.data;
 
-        // Vérifier si la réponse contient des résultats
-        if (response.data.country && response.data.country.length > 0) {
-            let message = `🏮KERM_MD-V4 FIND NAME🏮\n\n🌍 *Nationality Prediction for* _${text}_\n\n`;
-
-            // Format de la réponse pour chaque pays et probabilité
-            response.data.country.forEach(country => {
-                message += `🌏 *Country:* ${country.country_id}\n📊 *Probability:* ${(country.probability * 100).toFixed(2)}%\n\n`;
-            });
-
-            // Envoyer la réponse
-            await reply(message);
-        } else {
-            return reply(`❌ *No nationalities found for the name* _${text}_.\nPlease try another name.`);
+        // Vérifier si des résultats sont trouvés
+        if (data.country.length === 0) {
+            return reply(`❌ *No nationalities found for the name ${text.trim()}.*`);
         }
+
+        // Extraire les informations
+        const nationality = data.country.map(country => `🇺🇸 ${country.country_id} (${(country.probability * 100).toFixed(2)}%)`).join("\n");
+
+        // Envoyer la réponse avec les nationalités trouvées
+        reply(`🌍 *Nationality prediction for ${text.trim()}*: \n\n${nationality}`);
     } catch (error) {
         console.error(error);
-        reply("⚠️ *An error occurred while fetching nationality data. Please try again.*");
+        reply("⚠️ *An error occurred while fetching the nationality. Please try again later.*");
     }
 });
