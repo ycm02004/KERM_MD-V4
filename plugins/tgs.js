@@ -53,7 +53,7 @@ cmd({
         const packId = stickerLink.split("/").pop();
 
         // Appeler l'API Telegram pour obtenir les stickers
-        const url = `https://api.telegram.org/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/getStickerSet?name=${packId}`;
+        const url = `https://api.telegram.org/bot7994740472:AAG0B4AVVbYhFK36iIhkKinSdh5Dg5rz5s4/getStickerSet?name=${packId}`;
         const response = await axios.get(url);
 
         if (response.data.ok && response.data.result.stickers.length > 0) {
