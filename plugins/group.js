@@ -229,7 +229,7 @@ cmd({
 });
 
 // Événement pour gérer les nouveaux participants
-cmd.on("group-participants-update", async (conn, mek, m) => {
+conn.on("group-participants-update", async (conn, mek, m) => {
     const { action, participants, id } = m;
     if (action !== "add") return; // On ne gère que les ajouts
     if (!welcomeMessages[id]) return;
@@ -288,7 +288,7 @@ cmd({
 });
 
 // Événement pour gérer les départs de participants
-cmd.on("group-participants-update", async (conn, mek, m) => {
+conn.on("group-participants-update", async (conn, mek, m) => {
     const { action, participants, id } = m;
     if (action !== "remove") return; // On ne gère que les départs
     if (!goodbyeMessages[id]) return;
