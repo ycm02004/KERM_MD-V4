@@ -9,7 +9,7 @@ contact dev2 237650564445 ♻️
 const config = require('../config')
 const {cmd , commands} = require('../command')
 cmd({
-    pattern: "alive",
+    pattern: "alive2",
     react: "🌐",
     desc: "Check bot online or no.",
     category: "main",
