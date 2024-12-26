@@ -36,7 +36,7 @@ const moment = require("moment");
 let botStartTime = Date.now(); // Enregistrement de l'heure de démarrage du bot
 
 cmd({
-    pattern: "alive2",
+    pattern: "alive",
     desc: "Check if the bot is active.",
     category: "info",
     react: "💡",
