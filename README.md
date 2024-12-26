@@ -134,7 +134,13 @@ jobs:
 
 ### <br>    ❖ DEPLOY_TALKDROVE ❖
 
-<a href='https://host.talkdrove.com/dashboard/select-bot/prepare-deployment?botId=51' target="_blank"><img alt='DEPLOY' src='https://img.shields.io/badge/TALKDROVE-h?color=navy&style=for-the-badge&logo=visualstudiocode'/></a></p>
+  1. Create Account. 
+
+<a href='https://host.talkdrove.com/auth/signup?ref=8F67E98D' target="_blank"><img alt='CREATE' src='https://img.shields.io/badge/CREATE-ACCOUNT-h?color=navy&style=for-the-badge&logo=visualstudiocode'/></a></p>
+
+  2. Deploy Now. 
+
+<a href='https://host.talkdrove.com/dashboard/select-bot/prepare-deployment?botId=51' target="_blank"><img alt='DEPLOY' src='https://img.shields.io/badge/DEPLOY-h?color=navy&style=for-the-badge&logo=visualstudiocode'/></a></p>
 
 ----------
 
