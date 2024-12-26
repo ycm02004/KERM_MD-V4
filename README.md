@@ -134,7 +134,7 @@ jobs:
 
 ### <br>    ❖ DEPLOY_TALKDROVE ❖
 
-  2. Deploy Now. 
+  1. Deploy Now. 
 
 <a href='https://host.talkdrove.com/dashboard/select-bot/prepare-deployment?botId=51' target="_blank"><img alt='DEPLOY' src='https://img.shields.io/badge/DEPLOY-NOW-h?color=navy&style=for-the-badge&logo=visualstudiocode'/></a></p>
 
