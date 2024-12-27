@@ -45,7 +45,7 @@ cmd({
 
         const query = args.join(" ");
         const tenorApiKey = "AIzaSyCyouca1_KKy4W_MG1xsPzuku5oa8W358c"; // Remplacez par votre clé API
-        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${tenorApiKey}&client_key=my_project&limit=8&media_filter=gif`;
+        const apiUrl = `https://tenor.googleapis.com/v2/search?q=${text}&key=${tenorApiKey}&client_key=my_project&limit=8&media_filter=gif`;
 
         // Appel API
         const response = await axios.get(apiUrl);
