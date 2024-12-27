@@ -1,4 +1,4 @@
-const {cmd , commands} = require('../command');
+const {cmd , commands, getBuffer} = require('../command');
 
 cmd({
     pattern: "editorpack",
