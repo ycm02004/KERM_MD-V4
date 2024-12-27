@@ -9,7 +9,7 @@
  * @version 0.0.6
  **/
 
- const { cmd,sck,sck1,hentai, getAdmin, tlang, prefix } = require('../lib')
+ const { cmd,sck,sck1,hentai, getAdmin, tlang, prefix } = require('../command')
  const Config = require('../config')
  cmd({
     pattern: "cosplay",
