@@ -1,4 +1,4 @@
-const { tlang,shazam,prefix,cmd } = require('../lib')
+const { tlang,shazam,prefix,cmd } = require('../command')
 let yts = require("secktor-pack");
 cmd({
         pattern: "find",
