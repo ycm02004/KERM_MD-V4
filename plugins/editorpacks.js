@@ -1,4 +1,4 @@
-const { cmd, TelegraPh, getBuffer } = require('../lib/');
+const {cmd , commands} = require('../command');
 
 cmd({
     pattern: "editorpack",
