@@ -1,4 +1,4 @@
-const { tlang, cmd, getBuffer } = require('../lib');
+const { tlang, cmd, getBuffer } = require('../command');
 const Config = require('../config');
 const axios = require('axios');
 
