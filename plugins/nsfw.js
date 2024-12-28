@@ -1,336 +1,131 @@
-/**
- Copyright (C) 2022.
- Licensed under the  GPL-3.0 License;
- You may not use this file except in compliance with the License.
- It is supplied in the hope that it may be useful.
- * @project_name : Secktor-Md
- * @author : SamPandey001 <https://github.com/SamPandey001>
- * @description : Secktor,A Multi-functional whatsapp bot.
- * @version 0.0.6
- **/
 
- const { cmd,sck,sck1,hentai, getAdmin, tlang, prefix } = require('../command')
- const Config = require('../config')
- cmd({
-    pattern: "cosplay",
-    desc: "NSFW cosplay.",
-    category: "nsfw",
+
+
+const { cmd } = require('../command'); // Assurez-vous que cmd est bien défini dans votre projet
+
+cmd({
+    pattern: "nsfw",
+    desc: "Display a list of NSFW options",
+    category: "fun",
+    use: '.nsfw',
+    react: "🔥",
+    filename: __filename
 },
-async(Void, citel) => {
+async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
+        const nsfwList = `
+Here is your NSFW command, choose one:
 
-        var solod = "Cosplay Porn HD PICS";
-			let gis = require("async-g-i-s");
-			let zerogroup = (await sck.findOne({
-				id: citel.chat,
-			})) || (await new sck({
-					id: citel.chat,
-				})
-				.save());
-			let mongoschemas = zerogroup.nsfw || "false";
-            if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
-               let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-				let buttonMessage = {
-					image: {
-						url: images,
-					},
-					caption: `*----「 Cosplay 」----*`,
-					footer: Void.user.name,
-					headerType: 4,
-					contextInfo: {
-						externalAdReply: {
-							title: tlang().title,
-							body: `Secktor-NSFW`,
-							thumbnail: log0,
-							mediaType: 2,
-							mediaUrl: ``,
-							sourceUrl: ``,
-						},
-					},
-				};
-				Void.sendMessage(citel.chat, buttonMessage, {
-					quoted: citel,
-				});
-         } catch (e) {
-           console.log(e)
-      }
+🍆 **PUSSY** 
+🍑 **FUCK**
+🔞 **HENTAI**
 
-}
-);
+Simply type the number corresponding to the option you'd like to choose.`;
 
-    //---------------------------------------------------------------------------
-
-    cmd({
-        pattern: "ecchi",
-        desc: "NSFW ecchi.",
-        category: "nsfw",
-    },
-    async(Void, citel) => {
-        var solod = "Ecchi Porn HD PICS";
-        let gis = require("async-g-i-s");
-        let zerogroup = (await sck.findOne({
-            id: citel.chat,
-        })) || (await new sck({
-                id: citel.chat,
-            })
-            .save());
-        let mongoschemas = zerogroup.nsfw || "false";
-        if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
- let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-            let buttonMessage = {
-                image: {
-                    url: images,
-                },
-                caption: `*----「 Ecchi 」----*`,
-                footer: Void.user.name,
-                headerType: 4,
-                contextInfo: {
-                    externalAdReply: {
-                        title: tlang().title,
-                        body: `Secktor-NSFW`,
-                        jpegThumbnail:log0,
-                        thumbnail: log0,
-                        mediaType: 2,
-                        mediaUrl: ``,
-                        sourceUrl: ``,
-                    },
-                }, 
-            };
-            Void.sendMessage(citel.chat, buttonMessage, {
-                quoted: citel,
-            });
+        // Send the NSFW list with an image and caption
+        await conn.sendMessage(from, { 
+            text: nsfwList, 
+            caption: 'Choose one from the list above!', 
+            image: { url: 'https://i.ibb.co/zFghN2T/Manul-Ofc-X.jpg' }
+        }, { quoted: mek });
+    } catch (e) {
+        console.error(e);
+        reply('❌ An error occurred while processing your request.');
     }
-    );
-        //---------------------------------------------------------------------------
+});
+cmd({
+    pattern: "fuck", // Nom de la commande
+    desc: "Fetch a NSFW image related to the command",
+    category: "fun",
+    use: '.fuck',
+    react: "🔥",
+    filename: __filename
+},
+async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        // URL de l'API
+        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images?category=fuck`;
+        
+        // Récupérer l'image via l'API
+        const response = await axios.get(apiURL);
 
-        cmd({
-            pattern: "hentai",
-            category: "nsfw",
-        },
-        async(Void, citel) => {
-            var solod = "Hentai Porn HD PICS";
-			let gis = require("async-g-i-s");
-			let zerogroup = (await sck.findOne({
-				id: citel.chat,
-			})) || (await new sck({
-					id: citel.chat,
-				})
-				.save());
-			let mongoschemas = zerogroup.nsfw || "false";
-            if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
- let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-				let buttonMessage = {
-					image: {
-						url: images,
-					},
-					caption: `*----「 Hentai 」----*`,
-					footer: Void.user.name,
-					headerType: 4,
-					contextInfo: {
-						externalAdReply: {
-							title: tlang().title,
-							body: `Secktor-NSFW`,
-							thumbnail: log0,
-							mediaType: 2,
-							mediaUrl: ``,
-							sourceUrl: ``,
-						},
-					},
-				};
-				Void.sendMessage(citel.chat, buttonMessage, {
-					quoted: citel,
-				});
+        if (response.data && response.data.image_url) {
+            const imageUrl = response.data.image_url;
+
+            // Envoi de l'image avec le caption
+            await conn.sendMessage(from, {
+                image: { url: imageUrl },
+                caption: `Here your ${command} image 🔞🍆🍑.\n> KERM🍑🔞.`,
+            }, { quoted: mek });
+        } else {
+            await reply('❌ No image found for this category.');
         }
-        );
-            //---------------------------------------------------------------------------
-
-    cmd({
-        pattern: "hentaivid",
-        desc: "hentai video.",
-        category: "nsfw",
-    },
-    async(Void, citel) => {
-        let zerogroup = (await sck.findOne({
-            id: citel.chat,
-        })) || (await new sck({
-                id: citel.chat,
-            })
-            .save());
-        let mongoschemas = zerogroup.nsfw || "false";
-        if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
-       let h = hentai()
-       Void.sendMessage(citel.chat,{video: { url: h[0].video1},caption: 'Now I can see your future.'})
+    } catch (e) {
+        console.error(e);
+        await reply('❌ An error occurred while fetching the image.');
     }
-    );
-        //---------------------------------------------------------------------------
+});
+cmd({
+    pattern: "pussy", // Nom de la commande
+    desc: "Fetch a NSFW image related to the command",
+    category: "fun",
+    use: '.pussy',
+    react: "🍑",
+    filename: __filename
+},
+async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        // URL de l'API
+        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images?category=pussy`;
+        
+        // Récupérer l'image via l'API
+        const response = await axios.get(apiURL);
 
-        cmd({
-            pattern: "ranal",
-            category: "nsfw",
-        },
-        async(Void, citel) => {
-            var solod = "Anal Porn HD PICS";
-			let gis = require("async-g-i-s");
-			let zerogroup = (await sck.findOne({
-				id: citel.chat,
-			})) || (await new sck({
-					id: citel.chat,
-				})
-				.save());
-			let mongoschemas = zerogroup.nsfw || "false";
-            if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
- let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-				let buttonMessage = {
-					image: {
-						url: images,
-					},
-					caption: `*----「 Real Anal 」----*`,
-					footer: Void.user.name,
-					headerType: 4,
-					contextInfo: {
-						externalAdReply: {
-							title: tlang().title,
-							body: `Secktor-NSFW`,
-							thumbnail: log0,
-							mediaType: 2,
-							mediaUrl: ``,
-							sourceUrl: ``,
-						},
-					},
-				};
-				Void.sendMessage(citel.chat, buttonMessage, {
-					quoted: citel,
-				});
+        if (response.data && response.data.image_url) {
+            const imageUrl = response.data.image_url;
 
+            // Envoi de l'image avec le caption
+            await conn.sendMessage(from, {
+                image: { url: imageUrl },
+                caption: `Here your ${command} image 🔞🍆🍑.\n> KERM🍑🔞.`,
+            }, { quoted: mek });
+        } else {
+            await reply('❌ No image found for this category.');
         }
-        );
-            //---------------------------------------------------------------------------
-
-    cmd({
-        pattern: "rpussy",
-        category: "nsfw",
-    },
-    async(Void, citel) => {
-        var solod = "Pussy Porn HD PICS";
-        let gis = require("async-g-i-s");
-        let zerogroup = (await sck.findOne({
-            id: citel.chat,
-        })) || (await new sck({
-                id: citel.chat,
-            })
-            .save());
-        let mongoschemas = zerogroup.nsfw || "false";
-        if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
- let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-            let buttonMessage = {
-                image: {
-                    url: images,
-                },
-                caption: `*----「 Real PUSSY 」----*`,
-                footer: Void.user.name,
-                headerType: 4,
-                contextInfo: {
-                    externalAdReply: {
-                        title: tlang().title,
-                        body: `Secktor-NSFW`,
-                        thumbnail: log0,
-                        mediaType: 2,
-                        mediaUrl: ``,
-                        sourceUrl: ``,
-                    },
-                },
-            };
-            Void.sendMessage(citel.chat, buttonMessage, {
-                quoted: citel,
-            });
+    } catch (e) {
+        console.error(e);
+        await reply('❌ An error occurred while fetching the image.');
     }
-    );
-        //---------------------------------------------------------------------------
+});
+cmd({
+    pattern: "hentai", // Nom de la commande
+    desc: "Fetch a NSFW image related to the command",
+    category: "fun",
+    use: '.hentai',
+    react: "🍑",
+    filename: __filename
+},
+async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        // URL de l'API
+        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images?category=hentai`;
+        
+        // Récupérer l'image via l'API
+        const response = await axios.get(apiURL);
 
-        cmd({
-            pattern: "solo",
-            category: "nsfw",
-        },
-        async(Void, citel) => {
-            var solod = "Solo Porn HD PICS";
-			let gis = require("async-g-i-s");
-			let zerogroup = (await sck.findOne({
-				id: citel.chat,
-			})) || (await new sck({
-					id: citel.chat,
-				})
-				.save());
-			let mongoschemas = zerogroup.nsfw || "false";
-            if (mongoschemas == "false") return citel.reply("*NSFW* is not active.");
- let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-				let buttonMessage = {
-					image: {
-						url: images,
-					},
-					caption: `*----「 Solo 」----*`,
-					footer: Void.user.name,
-					headerType: 4,
-					contextInfo: {
-						externalAdReply: {
-							title: tlang().title,
-							body: `Secktor-NSFW`,
-							thumbnail: log0,
-							mediaType: 2,
-							mediaUrl: ``,
-							sourceUrl: ``,
-						},
-					},
-				};
-				Void.sendMessage(citel.chat, buttonMessage, {
-					quoted: citel,
-				});
+        if (response.data && response.data.image_url) {
+            const imageUrl = response.data.image_url;
+
+            // Envoi de l'image avec le caption
+            await conn.sendMessage(from, {
+                image: { url: imageUrl },
+                caption: `Here your ${command} image 🔞🍆🍑.\n> KERM🍑🔞.`,
+            }, { quoted: mek });
+        } else {
+            await reply('❌ No image found for this category.');
         }
-        );
-            //---------------------------------------------------------------------------
-
-    cmd({
-        pattern: "vixen",
-        category: "nsfw",
-    },
-    async(Void, citel) => {
-        var solod = "Vixen Porn HD PICS";
-        let gis = require("async-g-i-s");
-        let zerogroup = (await sck.findOne({
-            id: citel.chat,
-        })) || (await new sck({
-                id: citel.chat,
-            })
-            .save());
-        let mongoschemas = zerogroup.nsfw || "false";
-        if (mongoschemas == "false") return citel.reply("*NSFW* is not active in current group.");
- let n = await gis(solod)
-                images = n[Math.floor(Math.random() * n.length)].url;
-            let buttonMessage = {
-                image: {
-                    url: images,
-                },
-                caption: `*----「 Vixen 」----*`,
-                footer: Void.user.name,
-                headerType: 4,
-                contextInfo: {
-                    externalAdReply: {
-                        title: tlang().title,
-                        body: `Secktor-NSFW`,
-                        thumbnail: log0,
-                        mediaType: 2,
-                        mediaUrl: ``,
-                        sourceUrl: ``,
-                    },
-                },
-            };
-            Void.sendMessage(citel.chat, buttonMessage, {
-                quoted: citel,
-            });
+    } catch (e) {
+        console.error(e);
+        await reply('❌ An error occurred while fetching the image.');
     }
-    );
+});
