@@ -13,20 +13,20 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
     try {
         // Liste des options NSFW
         const nsfwList = `
-Here is your NSFW command, choose one:
+[{• KERM MD V4 NSFW🤤🔞•}]
 
 1️⃣ *EJACULATION*
 2️⃣ *PENIS*
 3️⃣ *EREC*
-4️⃣ *CLASSROOM*
-5️⃣ *ASS*
+4️⃣ *NUDE*
+5️⃣ *SEX*
 6️⃣ *
 7️⃣ *
 8️⃣ *
 9️⃣ *
 1️⃣0️⃣
 
-Simply type the number corresponding to the option you'd like to choose.`;
+*_Simply type the number corresponding to the option you'd like to choose._*`;
 
         // URL de l'image à envoyer
         const imageUrl = 'https://i.ibb.co/j8hv83f/Manul-Ofc-X.jpg';
@@ -139,70 +139,70 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
     }
 });
 cmd({
-    pattern: "classroom", // Nom de la commande
-    desc: "Display a classroom NSFW image",
+    pattern: "nude", // Nom de la commande
+    desc: "Display a nude NSFW image",
     category: "fun",
-    use: '.classroom',
+    use: '.nude',
     react: "🔥", // Réaction ajoutée
     filename: __filename
 },
 async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        // URL de l'API pour obtenir l'image de la catégorie "classroom"
-        const apiUrl = 'https://pikabotzapi.vercel.app/anime-nsfw/hentai-images/?apikey=anya-md&category=classroom';
+        // URL de l'API pour obtenir l'image de la catégorie "nude"
+        const apiUrl = 'https://pikabotzapi.vercel.app/anime-nsfw/hentai-images/?apikey=anya-md&category=nude';
 
-        // Récupérer l'image via l'API
+        // Faire une requête à l'API
         const response = await fetch(apiUrl);
-        const jsonData = await response.json();
+        const data = await response.json();
 
-        // Vérifier si l'image est disponible
-        if (jsonData && jsonData.image) {
-            const imageUrl = jsonData.image; // URL de l'image reçue depuis l'API
+        // Vérification des données reçues
+        if (data && data.image) {
+            const imageUrl = data.image; // URL de l'image reçue depuis l'API
 
             // Envoi de l'image dans le chat
             await conn.sendMessage(from, {
                 image: { url: imageUrl },
-                caption: 'Here is your classroom NSFW image 🔞. Enjoy! 🔥🍑'
+                caption: 'Here is your nude NSFW image 🔞🔥.\n> KERM🔥🔞.'
             }, { quoted: mek });
         } else {
-            reply('❌ No image found for this category.');
+            reply('❌ Unable to fetch image. Please try again later.');
         }
     } catch (e) {
         console.error(e);
-        reply('❌ An error occurred while processing your request.');
+        await reply('❌ An error occurred while processing your request.');
     }
 });
 cmd({
-    pattern: "ass", // Nom de la commande
-    desc: "Display an ass-focused NSFW image",
+    pattern: "sex", // Nom de la commande
+    desc: "Display a NSFW sex image",
     category: "fun",
-    use: '.ass',
+    use: '.sex',
     react: "🔥", // Réaction ajoutée
     filename: __filename
 },
 async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        // URL de l'API pour obtenir l'image de la catégorie "ass_focus"
-        const apiUrl = 'https://pikabotzapi.vercel.app/anime-nsfw/hentai-images/?apikey=anya-md&category=ass_focus';
+        // URL de l'API pour obtenir l'image de la catégorie "sex"
+        const apiUrl = 'https://pikabotzapi.vercel.app/anime-nsfw/hentai-images/?apikey=anya-md&category=sex';
 
-        // Récupérer l'image via l'API
+        // Faire une requête à l'API
         const response = await fetch(apiUrl);
-        const jsonData = await response.json();
+        const data = await response.json();
 
-        // Vérifier si l'image est disponible
-        if (jsonData && jsonData.image) {
-            const imageUrl = jsonData.image; // URL de l'image reçue depuis l'API
+        // Vérification des données reçues
+        if (data && data.image) {
+            const imageUrl = data.image; // URL de l'image reçue depuis l'API
 
             // Envoi de l'image dans le chat
             await conn.sendMessage(from, {
                 image: { url: imageUrl },
-                caption: 'Here is your ass-focused NSFW image 🔞🍑.\n> KERM🍑🔞.'
+                caption: 'Here is your sex NSFW image 🔞🔥.\n> KERM🔥🔞.'
             }, { quoted: mek });
         } else {
-            reply('❌ No image found for this category.');
+            reply('❌ Unable to fetch image. Please try again later.');
         }
     } catch (e) {
         console.error(e);
-        reply('❌ An error occurred while processing your request.');
+        await reply('❌ An error occurred while processing your request.');
     }
 });
