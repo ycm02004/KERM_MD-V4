@@ -13,7 +13,7 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
     try {
         // Liste des options NSFW
         const nsfwList = `
-*(ﾒ﹏ﾒ)[{• KERM MD V4 NSFW🤤🔞•}](ﾒ﹏ﾒ)*
+*[{• KERM MD V4 NSFW🤤🔞•}]*
 
 1️⃣ *EJACULATION*
 2️⃣ *PENIS*
