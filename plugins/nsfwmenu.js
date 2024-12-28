@@ -14,6 +14,7 @@
 
 
 const { cmd } = require('../command'); // Assurez-vous que cmd est bien défini dans votre projet
+const axios = require('axios');
 
 cmd({
     pattern: "nsfw",
