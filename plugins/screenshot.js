@@ -16,7 +16,7 @@
 
 
 
-const { tlang, cmd } = require('../lib'); // Import necessary libraries
+const { tlang, cmd } = require('./lib'); // Import necessary libraries
 const axios = require('axios'); // Used for making HTTP requests
 
 cmd({
