@@ -33,6 +33,7 @@ const axios = require("axios");
 
 cmd({
     pattern: "fname",
+    alias: ["findname"],
     desc: "Find the nationality based on the name.",
     category: "fun",
     react: "🌍",
