@@ -342,3 +342,37 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
         await reply('❌ An error occurred while processing your request.');
     }
 });
+cmd({
+    pattern: "kiss", // Nom de la commande
+    desc: "Display a NSFW kissing image",
+    category: "fun",
+    use: '.kiss',
+    react: "💋", // Réaction ajoutée
+    filename: __filename
+},
+async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+    try {
+        // URL de l'API pour obtenir l'image de la catégorie "kissing_while_penetrated"
+        const apiUrl = 'https://pikabotzapi.vercel.app/anime-nsfw/hentai-images/?apikey=anya-md&category=kissing_while_penetrated';
+
+        // Faire une requête à l'API
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Vérification des données reçues
+        if (data && data.image) {
+            const imageUrl = data.image; // URL de l'image reçue depuis l'API
+
+            // Envoi de l'image dans le chat
+            await conn.sendMessage(from, {
+                image: { url: imageUrl },
+                caption: 'Here is your kiss NSFW image 🔞💋.\n> KERM💋🔞.'
+            }, { quoted: mek });
+        } else {
+            reply('❌ Unable to fetch image. Please try again later.');
+        }
+    } catch (e) {
+        console.error(e);
+        await reply('❌ An error occurred while processing your request.');
+    }
+});
