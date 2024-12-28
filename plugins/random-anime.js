@@ -29,6 +29,7 @@ const axios = require("axios");
 
 cmd({
     pattern: "rdanime",
+    alias: ["randomanime"],
     desc: "Get a random anime.",
     category: "fun",
     react: "🎥",
