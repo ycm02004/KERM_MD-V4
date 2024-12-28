@@ -62,37 +62,3 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         reply(`Error: ${e.message}`);
     }
 });
-cmd({
-    pattern: "wallpaper", // Nom de la commande
-    desc: "Display a random wallpaper",
-    category: "fun",
-    use: '.wallpaper',
-    react: "🖼️", // Réaction ajoutée
-    filename: __filename
-},
-async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
-    try {
-        // URL de l'API pour obtenir un fond d'écran aléatoire
-        const apiUrl = 'https://pikabotzapi.vercel.app/random/randomwall/?apikey=anya-md';
-
-        // Faire une requête à l'API
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-
-        // Vérification des données reçues
-        if (data && data.image) {
-            const imageUrl = data.image; // URL de l'image reçue depuis l'API
-
-            // Envoi du fond d'écran dans le chat
-            await conn.sendMessage(from, {
-                image: { url: imageUrl },
-                caption: 'Here is your random wallpaper 🖼️✨.\n> KERM✨🖼️.'
-            }, { quoted: mek });
-        } else {
-            reply('❌ Unable to fetch wallpaper. Please try again later.');
-        }
-    } catch (e) {
-        console.error(e);
-        await reply('❌ An error occurred while processing your request.');
-    }
-});
