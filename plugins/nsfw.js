@@ -1,5 +1,5 @@
 const { cmd } = require('../command'); // Assurez-vous que cmd est bien défini dans votre projet
-const { cmd } = require('../command'); // Assurez-vous que cmd est bien défini dans votre projet
+
 
 cmd({
     pattern: "nsfw", // Nom de la commande
