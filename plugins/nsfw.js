@@ -15,16 +15,16 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
         const nsfwList = `
 Here is your NSFW command, choose one:
 
-🤤 **EJACULATION**
-🍆 **PENIS**
-🔞 **EREC**
-🍇 **FEMALE**
-💋 **EMBRASSE**
-🤺 **SOUL**
-🩰 **VIRGIN**
-🤤 **PUSSY**
-🍆 **PENETRATION**
-🐾 **ANIMAL**
+🤤 *EJACULATION*
+🍆 *PENIS*
+🔞 *EREC*
+🍇 *FEMALE*
+💋 *EMBRASSE*
+🤺 *SOUL*
+🩰 *VIRGIN*
+🤤 *PUSSY*
+🍆 *PENETRATION*
+🐾 *ANIMAL*
 ⚡️ *PIKACHU*
 🍒 *TESTICULE*
 🔥 *5GIRLS*
