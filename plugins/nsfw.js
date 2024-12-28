@@ -21,7 +21,7 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
 4️⃣ *NUDE*
 5️⃣ *SEX*
 6️⃣ *CUTE*
-7️⃣ *ORGASM
+7️⃣ *ORGASM*
 8️⃣ *ANAL*
 9️⃣ *SUSPENSION*
 1️⃣0️⃣ *KISS*
