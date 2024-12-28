@@ -19,7 +19,7 @@ cmd({
 async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
         // URL de l'API
-        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images?category=fuck`;
+        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images`;
         
         // Récupérer l'image via l'API
         const response = await axios.get(apiURL);
@@ -51,7 +51,7 @@ cmd({
 async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
         // URL de l'API
-        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images?category=pussy`;
+        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images`;
         
         // Récupérer l'image via l'API
         const response = await axios.get(apiURL);
@@ -83,7 +83,7 @@ cmd({
 async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
         // URL de l'API
-        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images?category=hentai`;
+        const apiURL = `https://qr-pair-anyav2.koyeb.app/showcase/nsfw-images`;
         
         // Récupérer l'image via l'API
         const response = await axios.get(apiURL);
