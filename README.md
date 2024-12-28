@@ -34,43 +34,6 @@
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 
-### <br>   ❖ DEPLOY_WORKFLOWS ❖
-```
-name: Node.js CI
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Start application
-      run: npm start
-```
-
 [![FORK KERM_MD-V4](https://img.shields.io/badge/FORK%20-KERM%20MD%20V4-white)](https://github.com/Kgtech-cmr/KERM_MD-V4/fork)
 
 ### <br>    ❖ SESSION_ID ❖
