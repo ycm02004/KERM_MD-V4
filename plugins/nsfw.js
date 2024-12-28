@@ -2,6 +2,12 @@
 
 
 
+
+
+
+
+const axios = require('axios');
+
 cmd({
     pattern: "fuck", // Nom de la commande
     desc: "Fetch a NSFW image related to the command",
