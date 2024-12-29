@@ -13,7 +13,7 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
     try {
         // Check if a URL is provided in the command
         if (!args[0]) {
-            return reply("❌ Please provide a URL to shorten.\nEg ${prefix}tiny https://google.com");
+            return reply("❌ Please provide a URL to shorten.");
         }
 
         const url = args[0]; // The URL to be shortened
