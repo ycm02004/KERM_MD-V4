@@ -1,5 +1,9 @@
 const { cmd } = require('../command');
 const fs = require('fs');
+const config = ('../config');
+
+
+
 
 // File path to store the sudo list
 const sudoFilePath = './sudo.json';
