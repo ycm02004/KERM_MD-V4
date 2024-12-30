@@ -8,13 +8,19 @@ contact dev2 237650564445 ♻️
 
 
 
+
+
+
+
+
 const { cmd } = require('../command');
 const axios = require('axios');
 const { Buffer } = require('buffer');
 
-const GOOGLE_API_KEY = 'AIzaSyDebFT-uY_f82_An6bnE9WvVcgVbzwDKgU'; // Replace with your Google API key
-const GOOGLE_CX = '45b94c5cef39940d1'; // Replace with your Google Custom Search Engine ID
-
+const GOOGLE_API_KEY = 'AIzaSyDMbI3nvmQUrfjoCJYLS69Lej1hSXQjnWI'; // Replace with your Google API key
+const GOOGLE_CX = 'baf9bdb0c631236e5'; // Replace with your Google Custom Search Engine ID
+//const apiKey = "AIzaSyDMbI3nvmQUrfjoCJYLS69Lej1hSXQjnWI"; // Votre clé API Google
+// const cx = "baf9bdb0c631236e5"; /
 cmd({
     pattern: "img",
     desc: "Search and send images from Google.",
@@ -49,11 +55,11 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
             await conn.sendMessage(from, {
                 image: buffer,
                 caption: `
-*💗Image ${i + 1} from your search!💗*
+*💗 Image ${i + 1} from your search! 💗*
 
- *Enjoy these images! 👾*
+ *©  𝖦𝖤𝖭𝖤𝖱𝖠𝖳𝖤𝖣 𝖡𝖸 𝖪𝖤𝖱𝖬 ! 👾*
 
-> 🌈*KERM_MD-V4 BOT PLUGINS*🏝️`
+> 🍒KERM_MD-V4🍒`
 }, { quoted: mek });
 }
 
