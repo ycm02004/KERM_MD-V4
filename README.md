@@ -44,7 +44,7 @@
 ----------
 1. USE SESSION 1.
 <p align="center">
-<a href="https://la-session-kerm-v4.onrender.com"><img height= "35" title="Author" src="https://img.shields.io/badge/GET SESSION ID:1-black?style=for-the-badge&logo=render"></a>
+<a href="https://pair-session-kermv4-pair.onrender.com"><img height= "35" title="Author" src="https://img.shields.io/badge/GET SESSION ID:1-black?style=for-the-badge&logo=render"></a>
 <p/>
 2. USE SESSION 2 IF SESSION:1 DOESN'T WORK.
 <p align="center">
